@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
+    let rulerInterval = 50;
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
@@ -53,6 +54,79 @@ document.addEventListener("DOMContentLoaded", function() {
         html += '</body>\n</html>';
         document.getElementById('htmlCode').value = html;
     });
+
+    document.getElementById('toggleRuler').addEventListener('click', function() {
+        rulerVisible = !rulerVisible;
+        updateRulerVisibility();
+    });
+
+    document.getElementById('rulerInterval').addEventListener('input', function() {
+        rulerInterval = parseInt(this.value);
+        if (rulerVisible) {
+            updateRulerVisibility();
+        }
+    });
+
+    function updateRulerVisibility() {
+        const horizontalRuler = document.getElementById('horizontalRuler');
+        const verticalRuler = document.getElementById('verticalRuler');
+
+        if (rulerVisible) {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            horizontalRuler.style.width = `${canvasWidth}px`;
+            verticalRuler.style.height = `${canvasHeight}px`;
+
+            horizontalRuler.innerHTML = '';
+            verticalRuler.innerHTML = '';
+
+            for (let i = 0; i < canvasWidth; i += 10) {
+                const mark = document.createElement('div');
+                mark.style.position = 'absolute';
+                mark.style.top = '0';
+                mark.style.left = `${i}px`;
+                mark.style.width = '1px';
+                mark.style.height = '10px';
+                mark.style.background = '#ccc';
+                horizontalRuler.appendChild(mark);
+
+                if (i % rulerInterval === 0) {
+                    const label = document.createElement('div');
+                    label.style.position = 'absolute';
+                    label.style.top = '10px';
+                    label.style.left = `${i}px`;
+                    label.style.fontSize = '10px';
+                    label.innerText = i;
+                    horizontalRuler.appendChild(label);
+                }
+            }
+
+            for (let j = 0; j < canvasHeight; j += 10) {
+                const mark = document.createElement('div');
+                mark.style.position = 'absolute';
+                mark.style.left = '0';
+                mark.style.top = `${j}px`;
+                mark.style.width = '10px';
+                mark.style.height = '1px';
+                mark.style.background = '#ccc';
+                verticalRuler.appendChild(mark);
+
+                if (j % rulerInterval === 0) {
+                    const label = document.createElement('div');
+                    label.style.position = 'absolute';
+                    label.style.top = `${j}px`;
+                    label.style.left = '10px';
+                    label.style.fontSize = '10px';
+                    label.innerText = j;
+                    verticalRuler.appendChild(label);
+                }
+            }
+        } else {
+            horizontalRuler.innerHTML = '';
+            verticalRuler.innerHTML = '';
+        }
+    }
 
     canvas.on('selection:updated', showObjectDetails);
     canvas.on('selection:created', showObjectDetails);
@@ -167,52 +241,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function clearObjectDetails() {
         const details = document.getElementById('objectDetails');
         details.innerHTML = '';
-    }
-
-    document.getElementById('toggleRuler').addEventListener('click', function() {
-        rulerVisible = !rulerVisible;
-        updateRulerVisibility();
-    });
-
-    function updateRulerVisibility() {
-        const horizontalRuler = document.getElementById('horizontalRuler');
-        const verticalRuler = document.getElementById('verticalRuler');
-
-        if (rulerVisible) {
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-
-            horizontalRuler.style.width = `${canvasWidth}px`;
-            verticalRuler.style.height = `${canvasHeight}px`;
-
-            horizontalRuler.innerHTML = '';
-            verticalRuler.innerHTML = '';
-
-            for (let i = 0; i < canvasWidth; i += 10) {
-                const mark = document.createElement('div');
-                mark.style.position = 'absolute';
-                mark.style.top = '0';
-                mark.style.left = `${i}px`;
-                mark.style.width = '1px';
-                mark.style.height = '10px';
-                mark.style.background = '#ccc';
-                horizontalRuler.appendChild(mark);
-            }
-
-            for (let j = 0; j < canvasHeight; j += 10) {
-                const mark = document.createElement('div');
-                mark.style.position = 'absolute';
-                mark.style.left = '0';
-                mark.style.top = `${j}px`;
-                mark.style.width = '10px';
-                mark.style.height = '1px';
-                mark.style.background = '#ccc';
-                verticalRuler.appendChild(mark);
-            }
-        } else {
-            horizontalRuler.innerHTML = '';
-            verticalRuler.innerHTML = '';
-        }
     }
 
     // Ensure real-time updates for object properties
