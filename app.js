@@ -80,6 +80,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         </select>
                     </label><br>
                 `;
+
+                // Add real-time updates for text properties
                 document.getElementById('textContent').addEventListener('input', function() {
                     activeObject.set('text', this.value);
                     canvas.renderAll();
@@ -108,6 +110,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle}"></label><br>
                     <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
                 `;
+
+                // Add real-time updates for image properties
                 document.getElementById('imgWidth').addEventListener('input', function() {
                     activeObject.scaleToWidth(parseFloat(this.value));
                     canvas.renderAll();
