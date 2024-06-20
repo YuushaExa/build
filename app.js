@@ -131,10 +131,6 @@ document.addEventListener("DOMContentLoaded", function() {
             updateObjectDetails();
         });
 
-        addRealTimeTextUpdates(activeObject);
-    }
-
-    function addRealTimeTextUpdates(activeObject) {
         document.getElementById('textContent').addEventListener('input', function() {
             activeObject.set('text', this.value);
             canvas.renderAll();
@@ -179,10 +175,6 @@ document.addEventListener("DOMContentLoaded", function() {
             updateObjectDetails();
         });
 
-        addRealTimeImageUpdates(activeObject);
-    }
-
-    function addRealTimeImageUpdates(activeObject) {
         document.getElementById('imgWidth').addEventListener('input', function() {
             activeObject.scaleToWidth(parseFloat(this.value));
             canvas.renderAll();
