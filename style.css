@@ -18,10 +18,9 @@ body {
 }
 
 #canvas-container {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
+display: inline-block;
     align-items: center;
+                position: relative;
     border: 1px solid #ccc;
 }
 
