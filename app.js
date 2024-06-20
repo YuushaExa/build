@@ -44,9 +44,9 @@ document.addEventListener("DOMContentLoaded", function() {
         objects.forEach(obj => {
             if (obj.type === 'textbox') {
                 let tag = obj.heading || 'div';
-                html += `<${tag} style="position:absolute;left:${obj.left}px;top:${obj.top}px;font-size:${obj.fontSize}px;color:${obj.fill};font-family:${obj.fontFamily};">${obj.text}</${tag}>\n`;
+                html += `<${tag} style="position:absolute;left:${obj.left.toFixed(1)}px;top:${obj.top.toFixed(1)}px;font-size:${obj.fontSize.toFixed(1)}px;color:${obj.fill};font-family:${obj.fontFamily};">${obj.text}</${tag}>\n`;
             } else if (obj.type === 'image') {
-                html += `<img src="${obj._element.src}" alt="${obj.alt || ''}" style="position:absolute;left:${obj.left}px;top:${obj.top}px;width:${obj.width * obj.scaleX}px;height:${obj.height * obj.scaleY}px;transform:rotate(${obj.angle}deg);">\n`;
+                html += `<img src="${obj._element.src}" alt="${obj.alt || ''}" style="position:absolute;left:${obj.left.toFixed(1)}px;top:${obj.top.toFixed(1)}px;width:${(obj.width * obj.scaleX).toFixed(1)}px;height:${(obj.height * obj.scaleY).toFixed(1)}px;transform:rotate(${obj.angle.toFixed(1)}deg);">\n`;
             }
         });
 
@@ -154,89 +154,90 @@ document.addEventListener("DOMContentLoaded", function() {
                     canvas.renderAll();
                 });
                 document.getElementById('imgAngle').addEventListener('input', function() {
-activeObject.set('angle', parseFloat(this.value));
-canvas.renderAll();
-});
-document.getElementById('imgAlt').addEventListener('input', function() {
-activeObject.set('alt', this.value);
-});
-}
-}
-}
+                    activeObject.set('angle', parseFloat(this.value));
+                    canvas.renderAll();
+                });
+                document.getElementById('imgAlt').addEventListener('input', function() {
+                    activeObject.set('alt', this.value);
+                });
+            }
+        }
+    }
+
     function clearObjectDetails() {
-    const details = document.getElementById('objectDetails');
-    details.innerHTML = '';
-}
-
-document.getElementById('toggleRuler').addEventListener('click', function() {
-    rulerVisible = !rulerVisible;
-    updateRulerVisibility();
-});
-
-function updateRulerVisibility() {
-    const horizontalRuler = document.getElementById('horizontalRuler');
-    const verticalRuler = document.getElementById('verticalRuler');
-
-    if (rulerVisible) {
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-
-        horizontalRuler.style.width = `${canvasWidth}px`;
-        verticalRuler.style.height = `${canvasHeight}px`;
-
-        horizontalRuler.innerHTML = '';
-        verticalRuler.innerHTML = '';
-
-        for (let i = 0; i < canvasWidth; i += 10) {
-            const mark = document.createElement('div');
-            mark.style.position = 'absolute';
-            mark.style.top = '0';
-            mark.style.left = `${i}px`;
-            mark.style.width = '1px';
-            mark.style.height = '10px';
-            mark.style.background = '#ccc';
-            horizontalRuler.appendChild(mark);
-        }
-
-        for (let j = 0; j < canvasHeight; j += 10) {
-            const mark = document.createElement('div');
-            mark.style.position = 'absolute';
-            mark.style.left = '0';
-            mark.style.top = `${j}px`;
-            mark.style.width = '10px';
-            mark.style.height = '1px';
-            mark.style.background = '#ccc';
-            verticalRuler.appendChild(mark);
-        }
-    } else {
-        horizontalRuler.innerHTML = '';
-        verticalRuler.innerHTML = '';
+        const details = document.getElementById('objectDetails');
+        details.innerHTML = '';
     }
-}
 
-// Ensure real-time updates for object properties
-canvas.on('object:scaling', function(e) {
-    const activeObject = e.target;
-    if (activeObject && activeObject.type === 'textbox') {
-        activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
-        activeObject.set({ scaleX: 1, scaleY: 1 });
+    document.getElementById('toggleRuler').addEventListener('click', function() {
+        rulerVisible = !rulerVisible;
+        updateRulerVisibility();
+    });
+
+    function updateRulerVisibility() {
+        const horizontalRuler = document.getElementById('horizontalRuler');
+        const verticalRuler = document.getElementById('verticalRuler');
+
+        if (rulerVisible) {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            horizontalRuler.style.width = `${canvasWidth}px`;
+            verticalRuler.style.height = `${canvasHeight}px`;
+
+            horizontalRuler.innerHTML = '';
+            verticalRuler.innerHTML = '';
+
+            for (let i = 0; i < canvasWidth; i += 10) {
+                const mark = document.createElement('div');
+                mark.style.position = 'absolute';
+                mark.style.top = '0';
+                mark.style.left = `${i}px`;
+                mark.style.width = '1px';
+                mark.style.height = '10px';
+                mark.style.background = '#ccc';
+                horizontalRuler.appendChild(mark);
+            }
+
+            for (let j = 0; j < canvasHeight; j += 10) {
+                const mark = document.createElement('div');
+                mark.style.position = 'absolute';
+                mark.style.left = '0';
+                mark.style.top = `${j}px`;
+                mark.style.width = '10px';
+                mark.style.height = '1px';
+                mark.style.background = '#ccc';
+                verticalRuler.appendChild(mark);
+            }
+        } else {
+            horizontalRuler.innerHTML = '';
+            verticalRuler.innerHTML = '';
+        }
     }
-    showObjectDetails();
-});
 
-canvas.on('object:modified', function(e) {
-    showObjectDetails();
-});
+    // Ensure real-time updates for object properties
+    canvas.on('object:scaling', function(e) {
+        const activeObject = e.target;
+        if (activeObject && activeObject.type === 'textbox') {
+            activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
+            activeObject.set({ scaleX: 1, scaleY: 1 });
+        }
+        showObjectDetails();
+    });
 
-canvas.on('object:rotating', function(e) {
-    showObjectDetails();
-});
+    canvas.on('object:modified', function(e) {
+        showObjectDetails();
+    });
 
-canvas.on('object:moving', function(e) {
-    showObjectDetails();
-});
+    canvas.on('object:rotating', function(e) {
+        showObjectDetails();
+    });
 
-canvas.on('object:modified', function(e) {
-    showObjectDetails();
-});
+    canvas.on('object:moving', function(e) {
+        showObjectDetails();
+    });
+
+    canvas.on('object:modified', function(e) {
+        showObjectDetails();
+    });
 });
