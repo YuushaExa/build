@@ -8,7 +8,9 @@ document.addEventListener("DOMContentLoaded", function() {
             width: 200,
             fontSize: 20,
             fill: '#000',
-            fontFamily: 'Arial'
+            fontFamily: 'Arial',
+            scaleX: 1,
+            scaleY: 1
         });
         canvas.add(text);
         canvas.setActiveObject(text);
@@ -70,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 details.innerHTML = `
                     <h3>Text Properties</h3>
                     <label>Text: <input type="text" id="textContent" value="${activeObject.text}"></label><br>
-                    <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize}"></label><br>
+                    <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize.toFixed(1)}"></label><br>
                     <label>Color: <input type="color" id="textColor" value="${activeObject.fill}"></label><br>
                     <label>Font: <input type="text" id="textFont" value="${activeObject.fontFamily || 'Arial'}"></label><br>
                     <label>Heading: 
@@ -84,7 +86,20 @@ document.addEventListener("DOMContentLoaded", function() {
                             <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
                         </select>
                     </label><br>
+                    <button id="resetText">Reset Text Properties</button>
                 `;
+
+                document.getElementById('resetText').addEventListener('click', function() {
+                    activeObject.set({
+                        text: 'Sample Text',
+                        fontSize: 20,
+                        fill: '#000',
+                        fontFamily: 'Arial',
+                        heading: 'div'
+                    });
+                    canvas.renderAll();
+                    showObjectDetails();
+                });
 
                 // Add real-time updates for text properties
                 document.getElementById('textContent').addEventListener('input', function() {
@@ -92,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     canvas.renderAll();
                 });
                 document.getElementById('textSize').addEventListener('input', function() {
-                    activeObject.set('fontSize', parseInt(this.value, 10));
+                    activeObject.set('fontSize', parseFloat(this.value));
                     canvas.renderAll();
                 });
                 document.getElementById('textColor').addEventListener('input', function() {
@@ -110,11 +125,23 @@ document.addEventListener("DOMContentLoaded", function() {
             } else if (activeObject.type === 'image') {
                 details.innerHTML = `
                     <h3>Image Properties</h3>
-                    <label>Width: <input type="number" id="imgWidth" value="${activeObject.width * activeObject.scaleX}"></label><br>
-                    <label>Height: <input type="number" id="imgHeight" value="${activeObject.height * activeObject.scaleY}"></label><br>
-                    <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle}"></label><br>
+                    <label>Width: <input type="number" id="imgWidth" value="${(activeObject.width * activeObject.scaleX).toFixed(1)}"></label><br>
+                    <label>Height: <input type="number" id="imgHeight" value="${(activeObject.height * activeObject.scaleY).toFixed(1)}"></label><br>
+                    <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle.toFixed(1)}"></label><br>
                     <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
+                    <button id="resetImage">Reset Image Properties</button>
                 `;
+
+                document.getElementById('resetImage').addEventListener('click', function() {
+                    activeObject.set({
+                        scaleX: 0.5,
+                        scaleY: 0.5,
+                        angle: 0,
+                        alt: ''
+                    });
+                    canvas.renderAll();
+                    showObjectDetails();
+                });
 
                 // Add real-time updates for image properties
                 document.getElementById('imgWidth').addEventListener('input', function() {
