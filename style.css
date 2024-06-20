@@ -30,3 +30,11 @@ body {
     height: 200px;
     margin-top: 10px;
 }
+     .canvas-container {
+            position: relative;
+        }
+        .ruler {
+            position: absolute;
+            background: #f0f0f0;
+            z-index: -1;
+        }
