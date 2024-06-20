@@ -2,6 +2,28 @@ document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
 
     document.getElementById('addText').addEventListener('click', function() {
+        addTextToCanvas();
+    });
+
+    document.getElementById('addImage').addEventListener('click', function() {
+        addImageToCanvas();
+    });
+
+    document.getElementById('exportCode').addEventListener('click', function() {
+        exportCanvasToHTML();
+    });
+
+    canvas.on({
+        'selection:updated': updateObjectDetails,
+        'selection:created': updateObjectDetails,
+        'selection:cleared': clearObjectDetails,
+        'object:modified': updateObjectDetails,
+        'object:scaling': updateObjectDetails,
+        'object:rotating': updateObjectDetails,
+        'object:moving': updateObjectDetails
+    });
+
+    function addTextToCanvas() {
         const text = new fabric.Textbox('Sample Text', {
             left: 50,
             top: 50,
@@ -14,10 +36,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         canvas.add(text);
         canvas.setActiveObject(text);
-        showObjectDetails();
-    });
+        updateObjectDetails();
+    }
 
-    document.getElementById('addImage').addEventListener('click', function() {
+    function addImageToCanvas() {
         const url = prompt("Enter the image URL:");
         const altText = prompt("Enter the alt text for the image:");
         if (url) {
@@ -31,166 +53,155 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
                 canvas.add(img);
                 canvas.setActiveObject(img);
-                showObjectDetails();
+                updateObjectDetails();
             });
         }
-    });
+    }
 
-    document.getElementById('exportCode').addEventListener('click', function() {
+    function exportCanvasToHTML() {
         const objects = canvas.getObjects();
         let html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Your Page</title>\n</head>\n<body>\n';
 
         objects.forEach(obj => {
             if (obj.type === 'textbox') {
-                let tag = obj.heading || 'div';
-                html += `<${tag} style="position:absolute;left:${obj.left}px;top:${obj.top}px;font-size:${obj.fontSize}px;color:${obj.fill};font-family:${obj.fontFamily};">${obj.text}</${tag}>\n`;
+                html += createTextHTML(obj);
             } else if (obj.type === 'image') {
-                html += `<img src="${obj._element.src}" alt="${obj.alt || ''}" style="position:absolute;left:${obj.left}px;top:${obj.top}px;width:${obj.width * obj.scaleX}px;height:${obj.height * obj.scaleY}px;transform:rotate(${obj.angle}deg);">\n`;
+                html += createImageHTML(obj);
             }
         });
 
         html += '</body>\n</html>';
         document.getElementById('htmlCode').value = html;
-    });
+    }
 
-    canvas.on('selection:updated', showObjectDetails);
-    canvas.on('selection:created', showObjectDetails);
-    canvas.on('selection:cleared', clearObjectDetails);
+    function createTextHTML(obj) {
+        const tag = obj.heading || 'div';
+        return `<${tag} style="position:absolute;left:${obj.left}px;top:${obj.top}px;font-size:${obj.fontSize}px;color:${obj.fill};font-family:${obj.fontFamily};">${obj.text}</${tag}>\n`;
+    }
 
-    canvas.on('object:modified', showObjectDetails);
-    canvas.on('object:scaling', showObjectDetails);
-    canvas.on('object:rotating', showObjectDetails);
-    canvas.on('object:moving', showObjectDetails);
+    function createImageHTML(obj) {
+        return `<img src="${obj._element.src}" alt="${obj.alt || ''}" style="position:absolute;left:${obj.left}px;top:${obj.top}px;width:${obj.width * obj.scaleX}px;height:${obj.height * obj.scaleY}px;transform:rotate(${obj.angle}deg);">\n`;
+    }
 
-    function showObjectDetails() {
+    function updateObjectDetails() {
         const activeObject = canvas.getActiveObject();
         const details = document.getElementById('objectDetails');
         details.innerHTML = '';
 
         if (activeObject) {
             if (activeObject.type === 'textbox') {
-                details.innerHTML = `
-                    <h3>Text Properties</h3>
-                    <label>Text: <input type="text" id="textContent" value="${activeObject.text}"></label><br>
-                    <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize.toFixed(1)}"></label><br>
-                    <label>Color: <input type="color" id="textColor" value="${activeObject.fill}"></label><br>
-                    <label>Font: <input type="text" id="textFont" value="${activeObject.fontFamily || 'Arial'}"></label><br>
-                    <label>Heading: 
-                        <select id="textHeading">
-                            <option value="div" ${activeObject.heading === 'div' ? 'selected' : ''}>Normal</option>
-                            <option value="h1" ${activeObject.heading === 'h1' ? 'selected' : ''}>H1</option>
-                            <option value="h2" ${activeObject.heading === 'h2' ? 'selected' : ''}>H2</option>
-                            <option value="h3" ${activeObject.heading === 'h3' ? 'selected' : ''}>H3</option>
-                            <option value="h4" ${activeObject.heading === 'h4' ? 'selected' : ''}>H4</option>
-                            <option value="h5" ${activeObject.heading === 'h5' ? 'selected' : ''}>H5</option>
-                            <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
-                        </select>
-                    </label><br>
-                    <button id="resetText">Reset Text Properties</button>
-                `;
-
-                document.getElementById('resetText').addEventListener('click', function() {
-                    activeObject.set({
-                        text: 'Sample Text',
-                        fontSize: 20,
-                        fill: '#000',
-                        fontFamily: 'Arial',
-                        heading: 'div'
-                    });
-                    canvas.renderAll();
-                    showObjectDetails();
-                });
-
-                // Add real-time updates for text properties
-                document.getElementById('textContent').addEventListener('input', function() {
-                    activeObject.set('text', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textSize').addEventListener('input', function() {
-                    activeObject.set('fontSize', parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('textColor').addEventListener('input', function() {
-                    activeObject.set('fill', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textFont').addEventListener('input', function() {
-                    activeObject.set('fontFamily', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textHeading').addEventListener('change', function() {
-                    activeObject.set('heading', this.value);
-                    canvas.renderAll();
-                });
+                updateTextDetails(activeObject);
             } else if (activeObject.type === 'image') {
-                details.innerHTML = `
-                    <h3>Image Properties</h3>
-                    <label>Width: <input type="number" id="imgWidth" value="${(activeObject.width * activeObject.scaleX).toFixed(1)}"></label><br>
-                    <label>Height: <input type="number" id="imgHeight" value="${(activeObject.height * activeObject.scaleY).toFixed(1)}"></label><br>
-                    <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle.toFixed(1)}"></label><br>
-                    <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
-                    <button id="resetImage">Reset Image Properties</button>
-                `;
-
-                document.getElementById('resetImage').addEventListener('click', function() {
-                    activeObject.set({
-                        scaleX: 0.5,
-                        scaleY: 0.5,
-                        angle: 0,
-                        alt: ''
-                    });
-                    canvas.renderAll();
-                    showObjectDetails();
-                });
-
-                // Add real-time updates for image properties
-                document.getElementById('imgWidth').addEventListener('input', function() {
-                    activeObject.scaleToWidth(parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgHeight').addEventListener('input', function() {
-                    activeObject.scaleToHeight(parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgAngle').addEventListener('input', function() {
-                    activeObject.set('angle', parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgAlt').addEventListener('input', function() {
-                    activeObject.set('alt', this.value);
-                });
+                updateImageDetails(activeObject);
             }
         }
+    }
+
+    function updateTextDetails(activeObject) {
+        const details = document.getElementById('objectDetails');
+        details.innerHTML = `
+            <h3>Text Properties</h3>
+            <label>Text: <input type="text" id="textContent" value="${activeObject.text}"></label><br>
+            <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize.toFixed(1)}"></label><br>
+            <label>Color: <input type="color" id="textColor" value="${activeObject.fill}"></label><br>
+            <label>Font: <input type="text" id="textFont" value="${activeObject.fontFamily || 'Arial'}"></label><br>
+            <label>Heading: 
+                <select id="textHeading">
+                    <option value="div" ${activeObject.heading === 'div' ? 'selected' : ''}>Normal</option>
+                    <option value="h1" ${activeObject.heading === 'h1' ? 'selected' : ''}>H1</option>
+                    <option value="h2" ${activeObject.heading === 'h2' ? 'selected' : ''}>H2</option>
+                    <option value="h3" ${activeObject.heading === 'h3' ? 'selected' : ''}>H3</option>
+                    <option value="h4" ${activeObject.heading === 'h4' ? 'selected' : ''}>H4</option>
+                    <option value="h5" ${activeObject.heading === 'h5' ? 'selected' : ''}>H5</option>
+                    <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
+                </select>
+            </label><br>
+            <button id="resetText">Reset Text Properties</button>
+        `;
+
+        document.getElementById('resetText').addEventListener('click', function() {
+            activeObject.set({
+                text: 'Sample Text',
+                fontSize: 20,
+                fill: '#000',
+                fontFamily: 'Arial',
+                heading: 'div'
+            });
+            canvas.renderAll();
+            updateObjectDetails();
+        });
+
+        addRealTimeTextUpdates(activeObject);
+    }
+
+    function addRealTimeTextUpdates(activeObject) {
+        document.getElementById('textContent').addEventListener('input', function() {
+            activeObject.set('text', this.value);
+            canvas.renderAll();
+        });
+        document.getElementById('textSize').addEventListener('input', function() {
+            activeObject.set('fontSize', parseFloat(this.value));
+            canvas.renderAll();
+        });
+        document.getElementById('textColor').addEventListener('input', function() {
+            activeObject.set('fill', this.value);
+            canvas.renderAll();
+        });
+        document.getElementById('textFont').addEventListener('input', function() {
+            activeObject.set('fontFamily', this.value);
+            canvas.renderAll();
+        });
+        document.getElementById('textHeading').addEventListener('change', function() {
+            activeObject.set('heading', this.value);
+            canvas.renderAll();
+        });
+    }
+
+    function updateImageDetails(activeObject) {
+        const details = document.getElementById('objectDetails');
+        details.innerHTML = `
+            <h3>Image Properties</h3>
+            <label>Width: <input type="number" id="imgWidth" value="${(activeObject.width * activeObject.scaleX).toFixed(1)}"></label><br>
+            <label>Height: <input type="number" id="imgHeight" value="${(activeObject.height * activeObject.scaleY).toFixed(1)}"></label><br>
+            <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle.toFixed(1)}"></label><br>
+            <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
+            <button id="resetImage">Reset Image Properties</button>
+        `;
+
+        document.getElementById('resetImage').addEventListener('click', function() {
+            activeObject.set({
+                scaleX: 0.5,
+                scaleY: 0.5,
+                angle: 0,
+                alt: ''
+            });
+            canvas.renderAll();
+            updateObjectDetails();
+        });
+
+        addRealTimeImageUpdates(activeObject);
+    }
+
+    function addRealTimeImageUpdates(activeObject) {
+        document.getElementById('imgWidth').addEventListener('input', function() {
+            activeObject.scaleToWidth(parseFloat(this.value));
+            canvas.renderAll();
+        });
+        document.getElementById('imgHeight').addEventListener('input', function() {
+            activeObject.scaleToHeight(parseFloat(this.value));
+            canvas.renderAll();
+        });
+        document.getElementById('imgAngle').addEventListener('input', function() {
+            activeObject.set('angle', parseFloat(this.value));
+            canvas.renderAll();
+        });
+        document.getElementById('imgAlt').addEventListener('input', function() {
+            activeObject.set('alt', this.value);
+        });
     }
 
     function clearObjectDetails() {
         const details = document.getElementById('objectDetails');
         details.innerHTML = '';
     }
-
-    // Ensure real-time updates for object properties
-    canvas.on('object:scaling', function(e) {
-        const activeObject = e.target;
-        if (activeObject && activeObject.type === 'textbox') {
-            activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
-            activeObject.set({ scaleX: 1, scaleY: 1 });
-        }
-        showObjectDetails();
-    });
-
-    canvas.on('object:modified', function(e) {
-        showObjectDetails();
-    });
-
-    canvas.on('object:rotating', function(e) {
-        showObjectDetails();
-    });
-
-    canvas.on('object:moving', function(e) {
-        showObjectDetails();
-    });
-
-    canvas.on('object:modified', function(e) {
-        showObjectDetails();
-    });
 });
