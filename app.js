@@ -143,6 +143,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Ensure real-time updates for object properties
     canvas.on('object:scaling', function(e) {
+        const activeObject = e.target;
+        if (activeObject && activeObject.type === 'textbox') {
+            activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
+            activeObject.set({ scaleX: 1, scaleY: 1 });
+        }
         showObjectDetails();
     });
 
