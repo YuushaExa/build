@@ -7,14 +7,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="toolbar">
-        <button id="addText">Add Text</button>
-        <button id="addImage">Add Image</button>
-        <button id="exportCode">Get HTML Code</button>
+    <div id="container">
+        <div id="sidebar">
+            <button id="addText">Add Text</button>
+            <button id="addImage">Add Image</button>
+            <button id="exportCode">Get HTML Code</button>
+            <div id="objectDetails"></div>
+        </div>
+        <div id="canvas-container">
+            <canvas id="canvas" width="800" height="600"></canvas>
+        </div>
     </div>
-    <canvas id="canvas" width="800" height="600"></canvas>
     <textarea id="htmlCode" readonly></textarea>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/460/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
