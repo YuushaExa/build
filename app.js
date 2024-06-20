@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
             top: 50,
             width: 200,
             fontSize: 20,
-            fill: '#000'
+            fill: '#000',
+            fontFamily: 'Arial'
         });
         canvas.add(text);
         canvas.setActiveObject(text);
@@ -15,13 +16,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById('addImage').addEventListener('click', function() {
         const url = prompt("Enter the image URL:");
+        const altText = prompt("Enter the alt text for the image:");
         if (url) {
             fabric.Image.fromURL(url, function(img) {
                 img.set({
                     left: 50,
                     top: 100,
                     scaleX: 0.5,
-                    scaleY: 0.5
+                    scaleY: 0.5,
+                    alt: altText
                 });
                 canvas.add(img);
                 canvas.setActiveObject(img);
@@ -35,9 +38,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
         objects.forEach(obj => {
             if (obj.type === 'textbox') {
-                html += `<div style="position:absolute;left:${obj.left}px;top:${obj.top}px;font-size:${obj.fontSize}px;color:${obj.fill};">${obj.text}</div>\n`;
+                let tag = obj.heading || 'div';
+                html += `<${tag} style="position:absolute;left:${obj.left}px;top:${obj.top}px;font-size:${obj.fontSize}px;color:${obj.fill};font-family:${obj.fontFamily};">${obj.text}</${tag}>\n`;
             } else if (obj.type === 'image') {
-                html += `<img src="${obj._element.src}" style="position:absolute;left:${obj.left}px;top:${obj.top}px;width:${obj.width * obj.scaleX}px;height:${obj.height * obj.scaleY}px;transform:rotate(${obj.angle}deg);" alt="${obj.alt || ''}">\n`;
+                html += `<img src="${obj._element.src}" alt="${obj.alt || ''}" style="position:absolute;left:${obj.left}px;top:${obj.top}px;width:${obj.width * obj.scaleX}px;height:${obj.height * obj.scaleY}px;transform:rotate(${obj.angle}deg);">\n`;
             }
         });
 
@@ -62,6 +66,17 @@ document.addEventListener("DOMContentLoaded", function() {
                     <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize}"></label><br>
                     <label>Color: <input type="color" id="textColor" value="${activeObject.fill}"></label><br>
                     <label>Font: <input type="text" id="textFont" value="${activeObject.fontFamily || 'Arial'}"></label><br>
+                    <label>Heading: 
+                        <select id="textHeading">
+                            <option value="div" ${activeObject.heading === 'div' ? 'selected' : ''}>Normal</option>
+                            <option value="h1" ${activeObject.heading === 'h1' ? 'selected' : ''}>H1</option>
+                            <option value="h2" ${activeObject.heading === 'h2' ? 'selected' : ''}>H2</option>
+                            <option value="h3" ${activeObject.heading === 'h3' ? 'selected' : ''}>H3</option>
+                            <option value="h4" ${activeObject.heading === 'h4' ? 'selected' : ''}>H4</option>
+                            <option value="h5" ${activeObject.heading === 'h5' ? 'selected' : ''}>H5</option>
+                            <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
+                        </select>
+                    </label><br>
                 `;
                 document.getElementById('textContent').addEventListener('input', function() {
                     activeObject.set('text', this.value);
@@ -77,6 +92,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
                 document.getElementById('textFont').addEventListener('input', function() {
                     activeObject.set('fontFamily', this.value);
+                    canvas.renderAll();
+                });
+                document.getElementById('textHeading').addEventListener('change', function() {
+                    activeObject.set('heading', this.value);
                     canvas.renderAll();
                 });
             } else if (activeObject.type === 'image') {
