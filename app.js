@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
+    let rulerVisible = false;
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
@@ -153,44 +154,89 @@ document.addEventListener("DOMContentLoaded", function() {
                     canvas.renderAll();
                 });
                 document.getElementById('imgAngle').addEventListener('input', function() {
-                    activeObject.set('angle', parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgAlt').addEventListener('input', function() {
-                    activeObject.set('alt', this.value);
-                });
-            }
-        }
-    }
-
+activeObject.set('angle', parseFloat(this.value));
+canvas.renderAll();
+});
+document.getElementById('imgAlt').addEventListener('input', function() {
+activeObject.set('alt', this.value);
+});
+}
+}
+}
     function clearObjectDetails() {
-        const details = document.getElementById('objectDetails');
-        details.innerHTML = '';
-    }
+    const details = document.getElementById('objectDetails');
+    details.innerHTML = '';
+}
 
-    // Ensure real-time updates for object properties
-    canvas.on('object:scaling', function(e) {
-        const activeObject = e.target;
-        if (activeObject && activeObject.type === 'textbox') {
-            activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
-            activeObject.set({ scaleX: 1, scaleY: 1 });
+document.getElementById('toggleRuler').addEventListener('click', function() {
+    rulerVisible = !rulerVisible;
+    updateRulerVisibility();
+});
+
+function updateRulerVisibility() {
+    const horizontalRuler = document.getElementById('horizontalRuler');
+    const verticalRuler = document.getElementById('verticalRuler');
+
+    if (rulerVisible) {
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        horizontalRuler.style.width = `${canvasWidth}px`;
+        verticalRuler.style.height = `${canvasHeight}px`;
+
+        horizontalRuler.innerHTML = '';
+        verticalRuler.innerHTML = '';
+
+        for (let i = 0; i < canvasWidth; i += 10) {
+            const mark = document.createElement('div');
+            mark.style.position = 'absolute';
+            mark.style.top = '0';
+            mark.style.left = `${i}px`;
+            mark.style.width = '1px';
+            mark.style.height = '10px';
+            mark.style.background = '#ccc';
+            horizontalRuler.appendChild(mark);
         }
-        showObjectDetails();
-    });
 
-    canvas.on('object:modified', function(e) {
-        showObjectDetails();
-    });
+        for (let j = 0; j < canvasHeight; j += 10) {
+            const mark = document.createElement('div');
+            mark.style.position = 'absolute';
+            mark.style.left = '0';
+            mark.style.top = `${j}px`;
+            mark.style.width = '10px';
+            mark.style.height = '1px';
+            mark.style.background = '#ccc';
+            verticalRuler.appendChild(mark);
+        }
+    } else {
+        horizontalRuler.innerHTML = '';
+        verticalRuler.innerHTML = '';
+    }
+}
 
-    canvas.on('object:rotating', function(e) {
-        showObjectDetails();
-    });
+// Ensure real-time updates for object properties
+canvas.on('object:scaling', function(e) {
+    const activeObject = e.target;
+    if (activeObject && activeObject.type === 'textbox') {
+        activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
+        activeObject.set({ scaleX: 1, scaleY: 1 });
+    }
+    showObjectDetails();
+});
 
-    canvas.on('object:moving', function(e) {
-        showObjectDetails();
-    });
+canvas.on('object:modified', function(e) {
+    showObjectDetails();
+});
 
-    canvas.on('object:modified', function(e) {
-        showObjectDetails();
-    });
+canvas.on('object:rotating', function(e) {
+    showObjectDetails();
+});
+
+canvas.on('object:moving', function(e) {
+    showObjectDetails();
+});
+
+canvas.on('object:modified', function(e) {
+    showObjectDetails();
+});
 });
