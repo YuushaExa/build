@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         canvas.add(text);
         canvas.setActiveObject(text);
+        showObjectDetails();
     });
 
     document.getElementById('addImage').addEventListener('click', function() {
@@ -28,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
                 canvas.add(img);
                 canvas.setActiveObject(img);
+                showObjectDetails();
             });
         }
     });
