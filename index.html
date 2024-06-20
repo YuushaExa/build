@@ -3,32 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web App Builder</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #canvas-container {
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
-        }
-        #controls {
-            margin-bottom: 20px;
-        }
-    </style>
+    <title>Web App Website Builder</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="controls">
-        <button id="add-rect">Add Rectangle</button>
-        <button id="add-text">Add Text</button>
-        <button id="generate-code">Generate Code</button>
+    <div id="toolbar">
+        <button id="addText">Add Text</button>
+        <button id="addImage">Add Image</button>
+        <button id="exportCode">Get HTML Code</button>
     </div>
-    <div id="canvas-container">
-        <canvas id="canvas" width="800" height="600"></canvas>
-    </div>
-    <pre id="code-output"></pre>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
-    <script src="script.js"></script>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <textarea id="htmlCode" readonly></textarea>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/460/fabric.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
