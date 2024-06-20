@@ -1,13 +1,32 @@
 body {
     font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-#toolbar {
-    margin-bottom: 10px;
+#container {
+    display: flex;
+    width: 90%;
+    margin-top: 20px;
+}
+
+#sidebar {
+    width: 200px;
+    margin-right: 20px;
+}
+
+#canvas-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
 }
 
 #htmlCode {
-    width: 100%;
+    width: 90%;
     height: 200px;
     margin-top: 10px;
 }
