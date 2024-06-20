@@ -55,6 +55,11 @@ document.addEventListener("DOMContentLoaded", function() {
     canvas.on('selection:created', showObjectDetails);
     canvas.on('selection:cleared', clearObjectDetails);
 
+    canvas.on('object:modified', showObjectDetails);
+    canvas.on('object:scaling', showObjectDetails);
+    canvas.on('object:rotating', showObjectDetails);
+    canvas.on('object:moving', showObjectDetails);
+
     function showObjectDetails() {
         const activeObject = canvas.getActiveObject();
         const details = document.getElementById('objectDetails');
