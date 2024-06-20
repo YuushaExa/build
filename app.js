@@ -140,4 +140,25 @@ document.addEventListener("DOMContentLoaded", function() {
         const details = document.getElementById('objectDetails');
         details.innerHTML = '';
     }
+
+    // Ensure real-time updates for object properties
+    canvas.on('object:scaling', function(e) {
+        showObjectDetails();
+    });
+
+    canvas.on('object:modified', function(e) {
+        showObjectDetails();
+    });
+
+    canvas.on('object:rotating', function(e) {
+        showObjectDetails();
+    });
+
+    canvas.on('object:moving', function(e) {
+        showObjectDetails();
+    });
+
+    canvas.on('object:modified', function(e) {
+        showObjectDetails();
+    });
 });
