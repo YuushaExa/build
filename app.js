@@ -268,4 +268,17 @@ document.addEventListener("DOMContentLoaded", function() {
     canvas.on('object:modified', function(e) {
         showObjectDetails();
     });
+
+document.getElementById('updateCanvasSize').addEventListener('click', function() {
+    const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
+    const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
+
+    if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
+        canvas.setWidth(newWidth);
+        canvas.setHeight(newHeight);
+        updateRulerVisibility(); // Update rulers to match new canvas size
+    }
+});
+
+    
 });
