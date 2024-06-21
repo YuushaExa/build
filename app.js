@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
-    canvas.setDimensions({ width: 1920, height: 1080 });
     let rulerVisible = false;
     let rulerInterval = 50;
-    let zoomLevel = 1;
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
@@ -74,8 +72,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const verticalRuler = document.getElementById('verticalRuler');
 
         if (rulerVisible) {
-            const canvasWidth = canvas.getWidth();
-            const canvasHeight = canvas.getHeight();
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
 
             horizontalRuler.style.width = `${canvasWidth}px`;
             verticalRuler.style.height = `${canvasHeight}px`;
@@ -128,39 +126,6 @@ document.addEventListener("DOMContentLoaded", function() {
             horizontalRuler.innerHTML = '';
             verticalRuler.innerHTML = '';
         }
-    }
-
-    // Zoom controls
-    document.getElementById('zoomIn').addEventListener('click', function() {
-        setZoom(zoomLevel + 0.1);
-    });
-
-    document.getElementById('zoomOut').addEventListener('click', function() {
-        setZoom(zoomLevel - 0.1);
-    });
-
-    canvas.on('mouse:wheel', function(opt) {
-        const delta = opt.e.deltaY;
-        let zoom = canvas.getZoom();
-        zoom *= 0.999 ** delta;
-        if (zoom > 3) zoom = 3;
-        if (zoom < 0.5) zoom = 0.5;
-        setZoom(zoom);
-        opt.e.preventDefault();
-        opt.e.stopPropagation();
-    });
-
-    function setZoom(newZoomLevel) {
-        zoomLevel = newZoomLevel;
-        if (zoomLevel > 3) zoomLevel = 3;
-        if (zoomLevel < 0.5) zoomLevel = 0.5;
-        canvas.setZoom(zoomLevel);
-        document.getElementById('zoomLevel').value = Math.round(zoomLevel * 100);
-
-        // Adjust canvas wrapper transform
-        const canvasWrapper = document.getElementById('canvas-container');
-        canvasWrapper.style.transformOrigin = '0 0';
-        canvasWrapper.style.transform = `scale(${zoomLevel})`;
     }
 
     canvas.on('selection:updated', showObjectDetails);
@@ -303,4 +268,17 @@ document.addEventListener("DOMContentLoaded", function() {
     canvas.on('object:modified', function(e) {
         showObjectDetails();
     });
+
+document.getElementById('updateCanvasSize').addEventListener('click', function() {
+    const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
+    const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
+
+    if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
+        canvas.setWidth(newWidth);
+        canvas.setHeight(newHeight);
+        updateRulerVisibility(); // Update rulers to match new canvas size
+    }
+});
+
+    
 });
