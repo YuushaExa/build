@@ -61,9 +61,12 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     document.getElementById('rulerInterval').addEventListener('input', function() {
-        rulerInterval = parseInt(this.value);
-        if (rulerVisible) {
-            updateRulerVisibility();
+        const value = parseInt(this.value);
+        if (value > 0) {
+            rulerInterval = value;
+            if (rulerVisible) {
+                updateRulerVisibility();
+            }
         }
     });
 
