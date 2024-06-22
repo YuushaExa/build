@@ -1,7 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
+    canvas.setDimensions({ width: 1920, height: 1080 });
+
     let rulerVisible = false;
     let rulerInterval = 50;
+    let zoomLevel = 1;
+    let isPanning = false;
+    let lastPosX = 0;
+    let lastPosY = 0;
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
@@ -11,8 +17,6 @@ document.addEventListener("DOMContentLoaded", function() {
             fontSize: 20,
             fill: '#000',
             fontFamily: 'Arial',
-            scaleX: 1,
-            scaleY: 1
         });
         canvas.add(text);
         canvas.setActiveObject(text);
@@ -72,8 +76,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const verticalRuler = document.getElementById('verticalRuler');
 
         if (rulerVisible) {
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
+            const canvasWidth = canvas.getWidth();
+            const canvasHeight = canvas.getHeight();
 
             horizontalRuler.style.width = `${canvasWidth}px`;
             verticalRuler.style.height = `${canvasHeight}px`;
@@ -127,6 +131,62 @@ document.addEventListener("DOMContentLoaded", function() {
             verticalRuler.innerHTML = '';
         }
     }
+
+    // Zoom controls
+    document.getElementById('zoomIn').addEventListener('click', function() {
+        setZoom(zoomLevel + 0.1);
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', function() {
+        setZoom(zoomLevel - 0.1);
+    });
+
+    canvas.on('mouse:wheel', function(opt) {
+        const delta = opt.e.deltaY;
+        let zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 3) zoom = 3;
+        if (zoom < 0.5) zoom = 0.5;
+        setZoom(zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+    });
+
+    function setZoom(newZoomLevel) {
+        zoomLevel = newZoomLevel;
+        if (zoomLevel > 3) zoomLevel = 3;
+        if (zoomLevel < 0.5) zoomLevel = 0.5;
+        canvas.setZoom(zoomLevel);
+        document.getElementById('zoomLevel').value = Math.round(zoomLevel * 100);
+    }
+
+    // Panning
+    canvas.on('mouse:down', function(opt) {
+        const evt = opt.e;
+        if (evt.altKey === true) {
+            isPanning = true;
+            canvas.setCursor('move');
+            lastPosX = evt.clientX;
+            lastPosY = evt.clientY;
+        }
+    });
+
+    canvas.on('mouse:move', function(opt) {
+        if (isPanning) {
+            const e = opt.e;
+            const vpt = canvas.viewportTransform;
+            vpt[4] += e.clientX - lastPosX;
+            vpt[5] += e.clientY - lastPosY;
+            canvas.requestRenderAll();
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+        }
+    });
+
+    canvas.on('mouse:up', function(opt) {
+        isPanning = false;
+        canvas.setCursor('default');
+    });
 
     canvas.on('selection:updated', showObjectDetails);
     canvas.on('selection:created', showObjectDetails);
@@ -268,17 +328,4 @@ document.addEventListener("DOMContentLoaded", function() {
     canvas.on('object:modified', function(e) {
         showObjectDetails();
     });
-
-document.getElementById('updateCanvasSize').addEventListener('click', function() {
-    const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
-    const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
-
-    if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
-        canvas.setWidth(newWidth);
-        canvas.setHeight(newHeight);
-        updateRulerVisibility(); // Update rulers to match new canvas size
-    }
-});
-
-    
 });
