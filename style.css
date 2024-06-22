@@ -1,27 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 #container {
     display: flex;
+    width: 90%;
+    margin-top: 20px;
 }
 
 #sidebar {
     width: 200px;
-    padding: 10px;
+    margin-right: 20px;
 }
 
 #canvas-container {
-    position: relative;
-    width: 800px;
-    height: 600px;
-    overflow: hidden;
+display: inline-block;
+    align-items: center;
+                position: relative;
     border: 1px solid #ccc;
-    margin: 0 auto;
-    cursor: grab;
 }
 
-#canvas {
-    display: block;
+#htmlCode {
+    width: 90%;
+    height: 200px;
+    margin-top: 10px;
 }
-
-#zoomLevel {
-    width: 50px;
-    text-align: center;
-}
+     .canvas-container {
+            position: relative;
+        }
+        .ruler {
+            position: absolute;
+            background: #f0f0f0;
+            z-index: -1;
+        }
