@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerInterval = 50;
     let zoomLevel = 1;
 
- document.getElementById('zoomIn').addEventListener('click', function() {
+    document.getElementById('zoomIn').addEventListener('click', function() {
         setZoom(zoomLevel + 0.1);
     });
 
@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('zoomLevel').value = Math.round(zoomLevel * 100);
     }
 
-    
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
             left: 50,
@@ -298,16 +297,14 @@ document.addEventListener("DOMContentLoaded", function() {
         showObjectDetails();
     });
 
-document.getElementById('updateCanvasSize').addEventListener('click', function() {
-    const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
-    const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
+    document.getElementById('updateCanvasSize').addEventListener('click', function() {
+        const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
+        const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
 
-    if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
-        canvas.setWidth(newWidth);
-        canvas.setHeight(newHeight);
-        updateRulerVisibility(); // Update rulers to match new canvas size
-    }
-});
-
-    
+        if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
+            canvas.setWidth(newWidth);
+            canvas.setHeight(newHeight);
+            updateRulerVisibility(); // Update rulers to match new canvas size
+        }
+    });
 });
