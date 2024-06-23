@@ -2,41 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web App Website Builder</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Canvas Zoom Example</title>
+    <style>
+        #canvas-container {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            border: 1px solid #ccc;
+            overflow: hidden;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #horizontalRuler, #verticalRuler {
+            position: absolute;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+        #horizontalRuler {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+        }
+        #verticalRuler {
+            top: 20px;
+            left: 0;
+            width: 20px;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-    <div id="container">
-        <div id="sidebar">
-            <button id="addText">Add Text</button>
-            <button id="addImage">Add Image</button>
-            <button id="exportCode">Get HTML Code</button>
-                <button id="toggleRuler">Toggle Ruler</button>
-                <label for="rulerInterval">Ruler Interval: </label>
-    <input type="number" id="rulerInterval" value="50">
-            <div id="objectDetails"></div>
-            <label for="canvasWidth">Canvas Width: </label>
-<input type="number" id="canvasWidth" value="800">
-<label for="canvasHeight">Canvas Height: </label>
-<input type="number" id="canvasHeight" value="600">
-<button id="updateCanvasSize">Update Canvas Size</button>
-
-<label for="zoomLevel">Zoom: </label>
-<input type="number" id="zoomLevel" value="100" readonly>%
-<button id="zoomIn">+</button>
-<button id="zoomOut">-</button>
-
-            
-        </div>
-        <div id="canvas-container">
-                     <div id="horizontalRuler" class="ruler" style="height: 20px; top: -20px;"></div>
-        <div id="verticalRuler" class="ruler" style="width: 20px; left: -20px;"></div>
-            <canvas id="canvas" width="800" height="600"></canvas>
-        </div>
+    <div id="controls">
+        <button id="zoomIn">Zoom In</button>
+        <button id="zoomOut">Zoom Out</button>
+        <span>Zoom Level: <input type="text" id="zoomLevel" value="100" readonly>%</span>
+        <button id="toggleRuler">Toggle Ruler</button>
+        <input type="number" id="rulerInterval" value="50" min="10" max="200">
     </div>
-    <textarea id="htmlCode" readonly></textarea>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/460/fabric.min.js"></script>
-    <script src="app.js"></script>
+    <div id="canvas-container">
+        <canvas id="canvas" width="1920" height="1080"></canvas>
+        <div id="horizontalRuler"></div>
+        <div id="verticalRuler"></div>
+    </div>
+    <textarea id="htmlCode" rows="10" cols="100"></textarea>
+    <div id="objectDetails"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
