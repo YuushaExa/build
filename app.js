@@ -54,8 +54,13 @@ canvas.on('object:scaled', function(event) {
     const boundingRect = obj.getBoundingRect();
 
     if (boundingRect.width > canvas.getWidth() || boundingRect.height > canvas.getHeight()) {
-        obj.setScaleX(obj.scaleX * (canvas.getWidth() / boundingRect.width));
-        obj.setScaleY(obj.scaleY * (canvas.getHeight() / boundingRect.height));
+        const scaleX = obj.scaleX * (canvas.getWidth() / boundingRect.width);
+        const scaleY = obj.scaleY * (canvas.getHeight() / boundingRect.height);
+        
+        obj.set({
+            scaleX: scaleX,
+            scaleY: scaleY
+        });
         obj.setCoords();
     }
     canvas.renderAll();
