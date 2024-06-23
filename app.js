@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerInterval = 50;
     let zoomLevel = 1;
 
-    document.getElementById('zoomIn').addEventListener('click', function() {
+ document.getElementById('zoomIn').addEventListener('click', function() {
         setZoom(zoomLevel + 0.1);
     });
 
@@ -27,30 +27,11 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomLevel = newZoomLevel;
         if (zoomLevel > 3) zoomLevel = 3;
         if (zoomLevel < 0.5) zoomLevel = 0.5;
-
-        const oldWidth = canvas.getWidth();
-        const oldHeight = canvas.getHeight();
-        const newWidth = oldWidth * zoomLevel;
-        const newHeight = oldHeight * zoomLevel;
-
-        canvas.setWidth(newWidth);
-        canvas.setHeight(newHeight);
-
-        canvas.getObjects().forEach(obj => {
-            obj.scaleX = obj.scaleX * zoomLevel;
-            obj.scaleY = obj.scaleY * zoomLevel;
-            obj.left = obj.left * zoomLevel;
-            obj.top = obj.top * zoomLevel;
-            obj.setCoords();
-        });
-
-        canvas.setZoom(1); // Reset canvas zoom to 1 to maintain the new dimensions
-        canvas.renderAll();
-
+        canvas.setZoom(zoomLevel);
         document.getElementById('zoomLevel').value = Math.round(zoomLevel * 100);
-        updateRulerVisibility();
     }
 
+    
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
             left: 50,
@@ -317,29 +298,16 @@ document.addEventListener("DOMContentLoaded", function() {
         showObjectDetails();
     });
 
-    document.getElementById('updateCanvasSize').addEventListener('click', function() {
-        const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
-        const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
+document.getElementById('updateCanvasSize').addEventListener('click', function() {
+    const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
+    const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
 
-        if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
-            const oldWidth = canvas.getWidth();
-            const oldHeight = canvas.getHeight();
-            const widthRatio = newWidth / oldWidth;
-            const heightRatio = newHeight / oldHeight;
+    if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
+        canvas.setWidth(newWidth);
+        canvas.setHeight(newHeight);
+        updateRulerVisibility(); // Update rulers to match new canvas size
+    }
+});
 
-            canvas.setWidth(newWidth);
-            canvas.setHeight(newHeight);
-
-            canvas.getObjects().forEach(obj => {
-                obj.scaleX = obj.scaleX * widthRatio;
-                obj.scaleY = obj.scaleY * heightRatio;
-                obj.left = obj.left * widthRatio;
-                obj.top = obj.top * heightRatio;
-                obj.setCoords();
-            });
-
-            canvas.renderAll();
-            updateRulerVisibility(); // Update rulers to match new canvas size
-        }
-    });
+    
 });
