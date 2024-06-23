@@ -27,8 +27,28 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomLevel = newZoomLevel;
         if (zoomLevel > 3) zoomLevel = 3;
         if (zoomLevel < 0.5) zoomLevel = 0.5;
-        canvas.setZoom(zoomLevel);
+
+        const oldWidth = canvas.getWidth();
+        const oldHeight = canvas.getHeight();
+        const newWidth = oldWidth * zoomLevel;
+        const newHeight = oldHeight * zoomLevel;
+
+        canvas.setWidth(newWidth);
+        canvas.setHeight(newHeight);
+
+        canvas.getObjects().forEach(obj => {
+            obj.scaleX = obj.scaleX * zoomLevel;
+            obj.scaleY = obj.scaleY * zoomLevel;
+            obj.left = obj.left * zoomLevel;
+            obj.top = obj.top * zoomLevel;
+            obj.setCoords();
+        });
+
+        canvas.setZoom(1); // Reset canvas zoom to 1 to maintain the new dimensions
+        canvas.renderAll();
+
         document.getElementById('zoomLevel').value = Math.round(zoomLevel * 100);
+        updateRulerVisibility();
     }
 
     document.getElementById('addText').addEventListener('click', function() {
@@ -302,8 +322,23 @@ document.addEventListener("DOMContentLoaded", function() {
         const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
 
         if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
+            const oldWidth = canvas.getWidth();
+            const oldHeight = canvas.getHeight();
+            const widthRatio = newWidth / oldWidth;
+            const heightRatio = newHeight / oldHeight;
+
             canvas.setWidth(newWidth);
             canvas.setHeight(newHeight);
+
+            canvas.getObjects().forEach(obj => {
+                obj.scaleX = obj.scaleX * widthRatio;
+                obj.scaleY = obj.scaleY * heightRatio;
+                obj.left = obj.left * widthRatio;
+                obj.top = obj.top * heightRatio;
+                obj.setCoords();
+            });
+
+            canvas.renderAll();
             updateRulerVisibility(); // Update rulers to match new canvas size
         }
     });
