@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (zoomLevel > zoomStep) {
                 zoomLevel -= zoomStep;
                 canvas.setZoom(zoomLevel);
-            }
+            });
     
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
