@@ -2,35 +2,33 @@ document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
     let rulerInterval = 50;
-    let zoomLevel = 1;
+    
+     function resizeCanvas() {
+            const container = document.getElementById('canvas-container');
+            canvas.setWidth(container.clientWidth);
+            canvas.setHeight(container.clientHeight);
+        }
 
- document.getElementById('zoomIn').addEventListener('click', function() {
-        setZoom(zoomLevel + 0.1);
-    });
+        // Initial resize
+        resizeCanvas();
 
-    document.getElementById('zoomOut').addEventListener('click', function() {
-        setZoom(zoomLevel - 0.1);
-    });
+        // Resize the canvas when the window is resized
+        window.addEventListener('resize', resizeCanvas);
 
-    canvas.on('mouse:wheel', function(opt) {
-        const delta = opt.e.deltaY;
-        let zoom = canvas.getZoom();
-        zoom *= 0.999 ** delta;
-        if (zoom > 3) zoom = 3;
-        if (zoom < 0.5) zoom = 0.5;
-        setZoom(zoom);
-        opt.e.preventDefault();
-        opt.e.stopPropagation();
-    });
+        // Zoom in and out
+        const zoomStep = 0.1;
+        let zoomLevel = 1;
 
-    function setZoom(newZoomLevel) {
-        zoomLevel = newZoomLevel;
-        if (zoomLevel > 3) zoomLevel = 3;
-        if (zoomLevel < 0.5) zoomLevel = 0.5;
-        canvas.setZoom(zoomLevel);
-        document.getElementById('zoomLevel').value = Math.round(zoomLevel * 100);
-    }
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            zoomLevel += zoomStep;
+            canvas.setZoom(zoomLevel);
+        });
 
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            if (zoomLevel > zoomStep) {
+                zoomLevel -= zoomStep;
+                canvas.setZoom(zoomLevel);
+            }
     
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
