@@ -3,33 +3,63 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerVisible = false;
     let rulerInterval = 50;
     
-     function resizeCanvas() {
-            const container = document.getElementById('canvas-container');
-            canvas.setWidth(container.clientWidth);
-            canvas.setHeight(container.clientHeight);
-        }
+function resizeCanvasContainer() {
+    const container = document.getElementById('canvas-container');
+    const aspectRatio = 1920 / 1080;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
 
-        // Initial resize
-        resizeCanvas();
+    if (containerWidth / aspectRatio <= containerHeight) {
+        canvas.setWidth(containerWidth);
+        canvas.setHeight(containerWidth / aspectRatio);
+    } else {
+        canvas.setWidth(containerHeight * aspectRatio);
+        canvas.setHeight(containerHeight);
+    }
 
-        // Resize the canvas when the window is resized
-        window.addEventListener('resize', resizeCanvas);
+    canvas.renderAll();
+}
 
-        // Zoom in and out
-        const zoomStep = 0.1;
-        let zoomLevel = 1;
+// Initial resize
+resizeCanvasContainer();
 
-        document.getElementById('zoom-in').addEventListener('click', () => {
-            zoomLevel += zoomStep;
-            canvas.setZoom(zoomLevel);
-        });
+// Resize the canvas when the window is resized
+window.addEventListener('resize', resizeCanvasContainer);
 
-        document.getElementById('zoom-out').addEventListener('click', () => {
-            if (zoomLevel > zoomStep) {
-                zoomLevel -= zoomStep;
-                canvas.setZoom(zoomLevel);
-            }
-        });
+// Zoom in and out
+const zoomStep = 0.1;
+let zoomLevel = 1;
+const zoomPercentage = document.getElementById('zoom-percentage');
+
+function updateZoom() {
+    canvas.setZoom(zoomLevel);
+    zoomPercentage.innerText = `${Math.round(zoomLevel * 100)}%`;
+}
+
+document.getElementById('zoom-in').addEventListener('click', () => {
+    zoomLevel += zoomStep;
+    updateZoom();
+});
+
+document.getElementById('zoom-out').addEventListener('click', () => {
+    if (zoomLevel > zoomStep) {
+        zoomLevel -= zoomStep;
+        updateZoom();
+    }
+});
+
+// Ensure the canvas size remains within the limits
+canvas.on('object:scaled', function(event) {
+    const obj = event.target;
+    const boundingRect = obj.getBoundingRect();
+
+    if (boundingRect.width > canvas.getWidth() || boundingRect.height > canvas.getHeight()) {
+        obj.setScaleX(obj.scaleX * (canvas.getWidth() / boundingRect.width));
+        obj.setScaleY(obj.scaleY * (canvas.getHeight() / boundingRect.height));
+        obj.setCoords();
+    }
+    canvas.renderAll();
+});
     
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
