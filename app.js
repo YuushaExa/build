@@ -3,51 +3,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerVisible = false;
     let rulerInterval = 50;
 
-    function resizeCanvasContainer() {
-        const container = document.getElementById('canvas-container');
-        const aspectRatio = 1920 / 1080;
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-
-        if (containerWidth / aspectRatio <= containerHeight) {
-            canvas.setWidth(containerWidth);
-            canvas.setHeight(containerWidth / aspectRatio);
-        } else {
-            canvas.setWidth(containerHeight * aspectRatio);
-            canvas.setHeight(containerHeight);
-        }
-
-        canvas.renderAll();
-    }
-
-    // Initial resize
-    resizeCanvasContainer();
-
-    // Resize the canvas when the window is resized
-    window.addEventListener('resize', resizeCanvasContainer);
-
-    // Zoom in and out
-    const zoomStep = 0.1;
-    let zoomLevel = 1;
-    const zoomPercentage = document.getElementById('zoom-percentage');
-
-    function updateZoom() {
-        canvas.setZoom(zoomLevel);
-        zoomPercentage.innerText = `${Math.round(zoomLevel * 100)}%`;
-    }
-
-    document.getElementById('zoom-in').addEventListener('click', () => {
-        zoomLevel += zoomStep;
-        updateZoom();
-    });
-
-    document.getElementById('zoom-out').addEventListener('click', () => {
-        if (zoomLevel > zoomStep) {
-            zoomLevel -= zoomStep;
-            updateZoom();
-        }
-    });
-
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
         var delta = opt.e.deltaY;
