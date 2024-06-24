@@ -13,13 +13,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const containerWidth = container.clientWidth;
         const containerHeight = container.clientHeight;
 
-        const scaleX = containerWidth / canvas.width;
-        const scaleY = containerHeight / canvas.height;
+        const scaleX = containerWidth / 1920;
+        const scaleY = containerHeight / 1080;
         const scale = Math.min(scaleX, scaleY);
 
         canvas.setDimensions({
-            width: canvas.width * scale,
-            height: canvas.height * scale
+            width: 1920 * scale,
+            height: 1080 * scale
         }, {
             cssOnly: true
         });
