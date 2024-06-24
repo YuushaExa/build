@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-      const canvas = new fabric.Canvas('canvas');
-    const container = document.getElementById('canvasContainer');
+    const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
@@ -12,51 +11,30 @@ document.addEventListener("DOMContentLoaded", function() {
         zoom *= 0.999 ** delta;
         if (zoom > 20) zoom = 20;
         if (zoom < 0.01) zoom = 0.01;
-        canvas.setZoom(zoom);
-        container.style.transform = `scale(${zoom})`;
+        canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+        zoomLevel = zoom;
         opt.e.preventDefault();
         opt.e.stopPropagation();
-        var vpt = this.viewportTransform;
-        if (zoom < 400 / 1000) {
-            vpt[4] = 200 - 1000 * zoom / 2;
-            vpt[5] = 200 - 1000 * zoom / 2;
-        } else {
-            if (vpt[4] >= 0) {
-                vpt[4] = 0;
-            } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
-                vpt[4] = canvas.getWidth() - 1000 * zoom;
-            }
-            if (vpt[5] >= 0) {
-                vpt[5] = 0;
-            } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
-                vpt[5] = canvas.getHeight() - 1000 * zoom;
-            }
-        }
-        // Update zoom level and percentage display
-        zoomLevel = zoom;
         updateZoom();
     });
 
     document.getElementById('zoomIn').addEventListener('click', function() {
         zoomLevel *= 1.1;
         if (zoomLevel > 20) zoomLevel = 20;
-        canvas.setZoom(zoomLevel);
-        container.style.transform = `scale(${zoomLevel})`;
+        canvas.setViewportTransform([zoomLevel, 0, 0, zoomLevel, 0, 0]);
         updateZoom();
     });
 
     document.getElementById('zoomOut').addEventListener('click', function() {
         zoomLevel *= 0.9;
         if (zoomLevel < 0.01) zoomLevel = 0.01;
-        canvas.setZoom(zoomLevel);
-        container.style.transform = `scale(${zoomLevel})`;
+        canvas.setViewportTransform([zoomLevel, 0, 0, zoomLevel, 0, 0]);
         updateZoom();
     });
 
     document.getElementById('resetZoom').addEventListener('click', function() {
         zoomLevel = 1;
-        canvas.setZoom(zoomLevel);
-        container.style.transform = `scale(${zoomLevel})`;
+        canvas.setViewportTransform([zoomLevel, 0, 0, zoomLevel, 0, 0]);
         updateZoom();
     });
 
@@ -78,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function() {
         canvas.add(text);
         canvas.setActiveObject(text);
         showObjectDetails();
-        fitCanvasToViewport();
     });
 
     document.getElementById('addImage').addEventListener('click', function() {
@@ -96,7 +73,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 canvas.add(img);
                 canvas.setActiveObject(img);
                 showObjectDetails();
-                fitCanvasToViewport();
             });
         }
     });
@@ -129,30 +105,6 @@ document.addEventListener("DOMContentLoaded", function() {
             updateRulerVisibility();
         }
     });
-
-    document.getElementById('zoomIn').addEventListener('click', function() {
-        zoomLevel *= 1.1;
-        if (zoomLevel > 20) zoomLevel = 20;
-        canvas.setZoom(zoomLevel);
-        updateZoom();
-    });
-
-    document.getElementById('zoomOut').addEventListener('click', function() {
-        zoomLevel *= 0.9;
-        if (zoomLevel < 0.01) zoomLevel = 0.01;
-        canvas.setZoom(zoomLevel);
-        updateZoom();
-    });
-
-    document.getElementById('resetZoom').addEventListener('click', function() {
-        zoomLevel = 1;
-        canvas.setZoom(zoomLevel);
-        updateZoom();
-    });
-
-    function updateZoom() {
-        document.getElementById('zoomPercentage').innerText = `${(zoomLevel * 100).toFixed(1)}%`;
-    }
 
     function updateRulerVisibility() {
         const horizontalRuler = document.getElementById('horizontalRuler');
@@ -247,121 +199,16 @@ document.addEventListener("DOMContentLoaded", function() {
                             <option value="h5" ${activeObject.heading === 'h5' ? 'selected' : ''}>H5</option>
                             <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
                         </select>
-                    </label><br>
-                    <button id="resetText">Reset Text Properties</button>`;
-
-                document.getElementById('resetText').addEventListener('click', function() {
-                    activeObject.set({
-                        text: 'Sample Text',
-                        fontSize: 20,
-                        fill: '#000',
-                        fontFamily: 'Arial',
-                        heading: 'div'
-                    });
-                    canvas.renderAll();
-                    showObjectDetails();
-                });
-
-                // Add real-time updates for text properties
-                document.getElementById('textContent').addEventListener('input', function() {
-                    activeObject.set('text', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textSize').addEventListener('input', function() {
-                    activeObject.set('fontSize', parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('textColor').addEventListener('input', function() {
-                    activeObject.set('fill', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textFont').addEventListener('input', function() {
-                    activeObject.set('fontFamily', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textHeading').addEventListener('change', function() {
-                    activeObject.set('heading', this.value);
-                    canvas.renderAll();
-                });
+                    </label><br>`;
             } else if (activeObject.type === 'image') {
                 details.innerHTML = 
                     `<h3>Image Properties</h3>
-                    <label>Width: <input type="number" id="imgWidth" value="${(activeObject.width * activeObject.scaleX).toFixed(1)}"></label><br>
-                    <label>Height: <input type="number" id="imgHeight" value="${(activeObject.height * activeObject.scaleY).toFixed(1)}"></label><br>
-                    <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle.toFixed(1)}"></label><br>
-                    <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
-                    <button id="resetImage">Reset Image Properties</button>`;
-
-                document.getElementById('resetImage').addEventListener('click', function() {
-                    activeObject.set({
-                        scaleX: 0.5,
-                        scaleY: 0.5,
-                        angle: 0,
-                        alt: ''
-                    });
-                    canvas.renderAll();
-                    showObjectDetails();
-                });
-
-                // Add real-time updates for image properties
-                document.getElementById('imgWidth').addEventListener('input', function() {
-                    activeObject.scaleToWidth(parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgHeight').addEventListener('input', function() {
-                    activeObject.scaleToHeight(parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgAngle').addEventListener('input', function() {
-                    activeObject.set('angle', parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgAlt').addEventListener('input', function() {
-                    activeObject.set('alt', this.value);
-                });
+                    <label>Alt Text: <input type="text" id="imageAltText" value="${activeObject.alt || ''}"></label><br>`;
             }
         }
     }
 
     function clearObjectDetails() {
-        const details = document.getElementById('objectDetails');
-        details.innerHTML = '';
+        document.getElementById('objectDetails').innerHTML = '<em>No object selected</em>';
     }
-
-    // Ensure real-time updates for object properties
-    canvas.on('object:scaling', function(e) {
-        const activeObject = e.target;
-        if (activeObject && activeObject.type === 'textbox') {
-            activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
-            activeObject.set({ scaleX: 1, scaleY: 1 });
-        }
-        showObjectDetails();
-    });
-
-    canvas.on('object:modified', function(e) {
-        showObjectDetails();
-    });
-
-    canvas.on('object:rotating', function(e) {
-        showObjectDetails();
-    });
-
-    canvas.on('object:moving', function(e) {
-        showObjectDetails();
-    });
-
-    document.getElementById('updateCanvasSize').addEventListener('click', function() {
-        const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
-        const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
-
-        if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
-            canvas.setWidth(newWidth);
-            canvas.setHeight(newHeight);
-            fitCanvasToViewport();
-            updateRulerVisibility(); // Update rulers to match new canvas size
-        }
-    });
-
-    // Initial fit to viewport
-    fitCanvasToViewport();
 });
