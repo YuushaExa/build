@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
     let rulerInterval = 50;
+    let zoomLevel = 1; // Track the current zoom level
 
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
@@ -97,6 +98,30 @@ document.addEventListener("DOMContentLoaded", function() {
             updateRulerVisibility();
         }
     });
+
+    document.getElementById('zoomIn').addEventListener('click', function() {
+        zoomLevel *= 1.1;
+        if (zoomLevel > 20) zoomLevel = 20;
+        canvas.setZoom(zoomLevel);
+        updateZoom();
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', function() {
+        zoomLevel *= 0.9;
+        if (zoomLevel < 0.01) zoomLevel = 0.01;
+        canvas.setZoom(zoomLevel);
+        updateZoom();
+    });
+
+    document.getElementById('resetZoom').addEventListener('click', function() {
+        zoomLevel = 1;
+        canvas.setZoom(zoomLevel);
+        updateZoom();
+    });
+
+    function updateZoom() {
+        document.getElementById('zoomPercentage').innerText = `${(zoomLevel * 100).toFixed(1)}%`;
+    }
 
     function updateRulerVisibility() {
         const horizontalRuler = document.getElementById('horizontalRuler');
