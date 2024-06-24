@@ -2,52 +2,82 @@ document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
     let rulerInterval = 50;
-    
-function resizeCanvasContainer() {
-    const container = document.getElementById('canvas-container');
-    const aspectRatio = 1920 / 1080;
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
 
-    if (containerWidth / aspectRatio <= containerHeight) {
-        canvas.setWidth(containerWidth);
-        canvas.setHeight(containerWidth / aspectRatio);
-    } else {
-        canvas.setWidth(containerHeight * aspectRatio);
-        canvas.setHeight(containerHeight);
+    function resizeCanvasContainer() {
+        const container = document.getElementById('canvas-container');
+        const aspectRatio = 1920 / 1080;
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        if (containerWidth / aspectRatio <= containerHeight) {
+            canvas.setWidth(containerWidth);
+            canvas.setHeight(containerWidth / aspectRatio);
+        } else {
+            canvas.setWidth(containerHeight * aspectRatio);
+            canvas.setHeight(containerHeight);
+        }
+
+        canvas.renderAll();
     }
 
-    canvas.renderAll();
-}
+    // Initial resize
+    resizeCanvasContainer();
 
-// Initial resize
-resizeCanvasContainer();
+    // Resize the canvas when the window is resized
+    window.addEventListener('resize', resizeCanvasContainer);
 
-// Resize the canvas when the window is resized
-window.addEventListener('resize', resizeCanvasContainer);
+    // Zoom in and out
+    const zoomStep = 0.1;
+    let zoomLevel = 1;
+    const zoomPercentage = document.getElementById('zoom-percentage');
 
-// Zoom in and out
-const zoomStep = 0.1;
-let zoomLevel = 1;
-const zoomPercentage = document.getElementById('zoom-percentage');
+    function updateZoom() {
+        canvas.setZoom(zoomLevel);
+        zoomPercentage.innerText = `${Math.round(zoomLevel * 100)}%`;
+    }
 
-function updateZoom() {
-    canvas.setZoom(zoomLevel);
-    zoomPercentage.innerText = `${Math.round(zoomLevel * 100)}%`;
-}
-
-document.getElementById('zoom-in').addEventListener('click', () => {
-    zoomLevel += zoomStep;
-    updateZoom();
-});
-
-document.getElementById('zoom-out').addEventListener('click', () => {
-    if (zoomLevel > zoomStep) {
-        zoomLevel -= zoomStep;
+    document.getElementById('zoom-in').addEventListener('click', () => {
+        zoomLevel += zoomStep;
         updateZoom();
-    }
-});
+    });
 
+    document.getElementById('zoom-out').addEventListener('click', () => {
+        if (zoomLevel > zoomStep) {
+            zoomLevel -= zoomStep;
+            updateZoom();
+        }
+    });
+
+    // Mouse wheel zoom
+    canvas.on('mouse:wheel', function(opt) {
+        var delta = opt.e.deltaY;
+        var zoom = canvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 20) zoom = 20;
+        if (zoom < 0.01) zoom = 0.01;
+        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+        opt.e.preventDefault();
+        opt.e.stopPropagation();
+        var vpt = this.viewportTransform;
+        if (zoom < 400 / 1000) {
+            vpt[4] = 200 - 1000 * zoom / 2;
+            vpt[5] = 200 - 1000 * zoom / 2;
+        } else {
+            if (vpt[4] >= 0) {
+                vpt[4] = 0;
+            } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
+                vpt[4] = canvas.getWidth() - 1000 * zoom;
+            }
+            if (vpt[5] >= 0) {
+                vpt[5] = 0;
+            } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
+                vpt[5] = canvas.getHeight() - 1000 * zoom;
+            }
+        }
+        // Update zoom level and percentage display
+        zoomLevel = zoom;
+        updateZoom();
+    });
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
@@ -190,8 +220,8 @@ document.getElementById('zoom-out').addEventListener('click', () => {
 
         if (activeObject) {
             if (activeObject.type === 'textbox') {
-                details.innerHTML = `
-                    <h3>Text Properties</h3>
+                details.innerHTML = 
+                    `<h3>Text Properties</h3>
                     <label>Text: <input type="text" id="textContent" value="${activeObject.text}"></label><br>
                     <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize.toFixed(1)}"></label><br>
                     <label>Color: <input type="color" id="textColor" value="${activeObject.fill}"></label><br>
@@ -207,8 +237,7 @@ document.getElementById('zoom-out').addEventListener('click', () => {
                             <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
                         </select>
                     </label><br>
-                    <button id="resetText">Reset Text Properties</button>
-                `;
+                    <button id="resetText">Reset Text Properties</button>`;
 
                 document.getElementById('resetText').addEventListener('click', function() {
                     activeObject.set({
@@ -244,14 +273,13 @@ document.getElementById('zoom-out').addEventListener('click', () => {
                     canvas.renderAll();
                 });
             } else if (activeObject.type === 'image') {
-                details.innerHTML = `
-                    <h3>Image Properties</h3>
+                details.innerHTML = 
+                    `<h3>Image Properties</h3>
                     <label>Width: <input type="number" id="imgWidth" value="${(activeObject.width * activeObject.scaleX).toFixed(1)}"></label><br>
                     <label>Height: <input type="number" id="imgHeight" value="${(activeObject.height * activeObject.scaleY).toFixed(1)}"></label><br>
                     <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle.toFixed(1)}"></label><br>
                     <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
-                    <button id="resetImage">Reset Image Properties</button>
-                `;
+                    <button id="resetImage">Reset Image Properties</button>`;
 
                 document.getElementById('resetImage').addEventListener('click', function() {
                     activeObject.set({
@@ -311,20 +339,14 @@ document.getElementById('zoom-out').addEventListener('click', () => {
         showObjectDetails();
     });
 
-    canvas.on('object:modified', function(e) {
-        showObjectDetails();
+    document.getElementById('updateCanvasSize').addEventListener('click', function() {
+        const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
+        const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
+
+        if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
+            canvas.setWidth(newWidth);
+            canvas.setHeight(newHeight);
+            updateRulerVisibility(); // Update rulers to match new canvas size
+        }
     });
-
-document.getElementById('updateCanvasSize').addEventListener('click', function() {
-    const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
-    const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
-
-    if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
-        canvas.setWidth(newWidth);
-        canvas.setHeight(newHeight);
-        updateRulerVisibility(); // Update rulers to match new canvas size
-    }
-});
-
-    
 });
