@@ -48,24 +48,7 @@ document.getElementById('zoom-out').addEventListener('click', () => {
     }
 });
 
-// Ensure the canvas size remains within the limits
-canvas.on('object:scaled', function(event) {
-    const obj = event.target;
-    const boundingRect = obj.getBoundingRect();
 
-    if (boundingRect.width > canvas.getWidth() || boundingRect.height > canvas.getHeight()) {
-        const scaleX = obj.scaleX * (canvas.getWidth() / boundingRect.width);
-        const scaleY = obj.scaleY * (canvas.getHeight() / boundingRect.height);
-        
-        obj.set({
-            scaleX: scaleX,
-            scaleY: scaleY
-        });
-        obj.setCoords();
-    }
-    canvas.renderAll();
-});
-    
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
             left: 50,
