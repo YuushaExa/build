@@ -1,35 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const canvas = new fabric.Canvas('canvas', {
-        width: 1920,
-        height: 1080
-    });
+    const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
-
-    // Function to fit the canvas within the viewport
-    function fitCanvasToViewport() {
-        const container = document.getElementById('canvas-container');
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-
-        const scaleX = containerWidth / 1920;
-        const scaleY = containerHeight / 1080;
-        const scale = Math.min(scaleX, scaleY);
-
-        canvas.setDimensions({
-            width: 1920 * scale,
-            height: 1080 * scale
-        }, {
-            cssOnly: true
-        });
-
-        canvas.setViewportTransform([scale, 0, 0, scale, 0, 0]);
-    }
-
-    // Call the fitCanvasToViewport function initially and on window resize
-    window.addEventListener('resize', fitCanvasToViewport);
-    fitCanvasToViewport();
 
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
@@ -230,48 +203,90 @@ document.addEventListener("DOMContentLoaded", function() {
                 details.innerHTML = 
                     `<h3>Text Properties</h3>
                     <label>Text: <input type="text" id="textContent" value="${activeObject.text}"></label><br>
-                    <label>Font Size: <input type="number" id="fontSize" value="${activeObject.fontSize}"></label><br>
-                    <label>Color: <input type="color" id="fontColor" value="${activeObject.fill}"></label><br>
-                    <label>Font Family: <input type="text" id="fontFamily" value="${activeObject.fontFamily}"></label><br>
-                    <button id="deleteObject">Delete</button>`;
-                
+                    <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize.toFixed(1)}"></label><br>
+                    <label>Color: <input type="color" id="textColor" value="${activeObject.fill}"></label><br>
+                    <label>Font: <input type="text" id="textFont" value="${activeObject.fontFamily || 'Arial'}"></label><br>
+                    <label>Heading: 
+                        <select id="textHeading">
+                            <option value="div" ${activeObject.heading === 'div' ? 'selected' : ''}>Normal</option>
+                            <option value="h1" ${activeObject.heading === 'h1' ? 'selected' : ''}>H1</option>
+                            <option value="h2" ${activeObject.heading === 'h2' ? 'selected' : ''}>H2</option>
+                            <option value="h3" ${activeObject.heading === 'h3' ? 'selected' : ''}>H3</option>
+                            <option value="h4" ${activeObject.heading === 'h4' ? 'selected' : ''}>H4</option>
+                            <option value="h5" ${activeObject.heading === 'h5' ? 'selected' : ''}>H5</option>
+                            <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
+                        </select>
+                    </label><br>
+                    <button id="resetText">Reset Text Properties</button>`;
+
+                document.getElementById('resetText').addEventListener('click', function() {
+                    activeObject.set({
+                        text: 'Sample Text',
+                        fontSize: 20,
+                        fill: '#000',
+                        fontFamily: 'Arial',
+                        heading: 'div'
+                    });
+                    canvas.renderAll();
+                    showObjectDetails();
+                });
+
+                // Add real-time updates for text properties
                 document.getElementById('textContent').addEventListener('input', function() {
-                    activeObject.text = this.value;
+                    activeObject.set('text', this.value);
                     canvas.renderAll();
                 });
-
-                document.getElementById('fontSize').addEventListener('input', function() {
-                    activeObject.fontSize = this.value;
+                document.getElementById('textSize').addEventListener('input', function() {
+                    activeObject.set('fontSize', parseFloat(this.value));
                     canvas.renderAll();
                 });
-
-                document.getElementById('fontColor').addEventListener('input', function() {
-                    activeObject.fill = this.value;
+                document.getElementById('textColor').addEventListener('input', function() {
+                    activeObject.set('fill', this.value);
                     canvas.renderAll();
                 });
-
-                document.getElementById('fontFamily').addEventListener('input', function() {
-                    activeObject.fontFamily = this.value;
+                document.getElementById('textFont').addEventListener('input', function() {
+                    activeObject.set('fontFamily', this.value);
                     canvas.renderAll();
                 });
-
-                document.getElementById('deleteObject').addEventListener('click', function() {
-                    canvas.remove(activeObject);
-                    clearObjectDetails();
+                document.getElementById('textHeading').addEventListener('change', function() {
+                    activeObject.set('heading', this.value);
+                    canvas.renderAll();
                 });
             } else if (activeObject.type === 'image') {
                 details.innerHTML = 
                     `<h3>Image Properties</h3>
-                    <label>Alt Text: <input type="text" id="altText" value="${activeObject.alt}"></label><br>
-                    <button id="deleteObject">Delete</button>`;
+                    <label>Width: <input type="number" id="imgWidth" value="${(activeObject.width * activeObject.scaleX).toFixed(1)}"></label><br>
+                    <label>Height: <input type="number" id="imgHeight" value="${(activeObject.height * activeObject.scaleY).toFixed(1)}"></label><br>
+                    <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle.toFixed(1)}"></label><br>
+                    <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
+                    <button id="resetImage">Reset Image Properties</button>`;
 
-                document.getElementById('altText').addEventListener('input', function() {
-                    activeObject.alt = this.value;
+                document.getElementById('resetImage').addEventListener('click', function() {
+                    activeObject.set({
+                        scaleX: 0.5,
+                        scaleY: 0.5,
+                        angle: 0,
+                        alt: ''
+                    });
+                    canvas.renderAll();
+                    showObjectDetails();
                 });
 
-                document.getElementById('deleteObject').addEventListener('click', function() {
-                    canvas.remove(activeObject);
-                    clearObjectDetails();
+                // Add real-time updates for image properties
+                document.getElementById('imgWidth').addEventListener('input', function() {
+                    activeObject.scaleToWidth(parseFloat(this.value));
+                    canvas.renderAll();
+                });
+                document.getElementById('imgHeight').addEventListener('input', function() {
+                    activeObject.scaleToHeight(parseFloat(this.value));
+                    canvas.renderAll();
+                });
+                document.getElementById('imgAngle').addEventListener('input', function() {
+                    activeObject.set('angle', parseFloat(this.value));
+                    canvas.renderAll();
+                });
+                document.getElementById('imgAlt').addEventListener('input', function() {
+                    activeObject.set('alt', this.value);
                 });
             }
         }
@@ -279,6 +294,39 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function clearObjectDetails() {
         const details = document.getElementById('objectDetails');
-        details.innerHTML = '<p>Select an object to view and edit its properties.</p>';
+        details.innerHTML = '';
     }
+
+    // Ensure real-time updates for object properties
+    canvas.on('object:scaling', function(e) {
+        const activeObject = e.target;
+        if (activeObject && activeObject.type === 'textbox') {
+            activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
+            activeObject.set({ scaleX: 1, scaleY: 1 });
+        }
+        showObjectDetails();
+    });
+
+    canvas.on('object:modified', function(e) {
+        showObjectDetails();
+    });
+
+    canvas.on('object:rotating', function(e) {
+        showObjectDetails();
+    });
+
+    canvas.on('object:moving', function(e) {
+        showObjectDetails();
+    });
+
+    document.getElementById('updateCanvasSize').addEventListener('click', function() {
+        const newWidth = parseInt(document.getElementById('canvasWidth').value, 10);
+        const newHeight = parseInt(document.getElementById('canvasHeight').value, 10);
+
+        if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
+            canvas.setWidth(newWidth);
+            canvas.setHeight(newHeight);
+            updateRulerVisibility(); // Update rulers to match new canvas size
+        }
+    });
 });
