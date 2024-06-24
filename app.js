@@ -1,27 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const canvas = new fabric.Canvas('canvas');
+      const canvas = new fabric.Canvas('canvas');
+    const container = document.getElementById('canvasContainer');
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
-
-    function fitCanvasToViewport() {
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const canvasWidth = canvas.getWidth();
-        const canvasHeight = canvas.getHeight();
-
-        if (canvasWidth > viewportWidth || canvasHeight > viewportHeight) {
-            const widthRatio = viewportWidth / canvasWidth;
-            const heightRatio = viewportHeight / canvasHeight;
-            zoomLevel = Math.min(widthRatio, heightRatio);
-            canvas.setZoom(zoomLevel);
-            updateZoom();
-        } else {
-            zoomLevel = 1;
-            canvas.setZoom(zoomLevel);
-            updateZoom();
-        }
-    }
 
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
@@ -30,7 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
         zoom *= 0.999 ** delta;
         if (zoom > 20) zoom = 20;
         if (zoom < 0.01) zoom = 0.01;
-        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+        canvas.setZoom(zoom);
+        container.style.transform = `scale(${zoom})`;
         opt.e.preventDefault();
         opt.e.stopPropagation();
         var vpt = this.viewportTransform;
@@ -53,6 +36,33 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomLevel = zoom;
         updateZoom();
     });
+
+    document.getElementById('zoomIn').addEventListener('click', function() {
+        zoomLevel *= 1.1;
+        if (zoomLevel > 20) zoomLevel = 20;
+        canvas.setZoom(zoomLevel);
+        container.style.transform = `scale(${zoomLevel})`;
+        updateZoom();
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', function() {
+        zoomLevel *= 0.9;
+        if (zoomLevel < 0.01) zoomLevel = 0.01;
+        canvas.setZoom(zoomLevel);
+        container.style.transform = `scale(${zoomLevel})`;
+        updateZoom();
+    });
+
+    document.getElementById('resetZoom').addEventListener('click', function() {
+        zoomLevel = 1;
+        canvas.setZoom(zoomLevel);
+        container.style.transform = `scale(${zoomLevel})`;
+        updateZoom();
+    });
+
+    function updateZoom() {
+        document.getElementById('zoomPercentage').innerText = `${(zoomLevel * 100).toFixed(1)}%`;
+    }
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
