@@ -4,6 +4,25 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
 
+    function fitCanvasToViewport() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const canvasWidth = canvas.getWidth();
+        const canvasHeight = canvas.getHeight();
+
+        if (canvasWidth > viewportWidth || canvasHeight > viewportHeight) {
+            const widthRatio = viewportWidth / canvasWidth;
+            const heightRatio = viewportHeight / canvasHeight;
+            zoomLevel = Math.min(widthRatio, heightRatio);
+            canvas.setZoom(zoomLevel);
+            updateZoom();
+        } else {
+            zoomLevel = 1;
+            canvas.setZoom(zoomLevel);
+            updateZoom();
+        }
+    }
+
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
         var delta = opt.e.deltaY;
@@ -49,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
         canvas.add(text);
         canvas.setActiveObject(text);
         showObjectDetails();
+        fitCanvasToViewport();
     });
 
     document.getElementById('addImage').addEventListener('click', function() {
@@ -66,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 canvas.add(img);
                 canvas.setActiveObject(img);
                 showObjectDetails();
+                fitCanvasToViewport();
             });
         }
     });
@@ -326,7 +347,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!isNaN(newWidth) && newWidth > 0 && !isNaN(newHeight) && newHeight > 0) {
             canvas.setWidth(newWidth);
             canvas.setHeight(newHeight);
+            fitCanvasToViewport();
             updateRulerVisibility(); // Update rulers to match new canvas size
         }
     });
+
+    // Initial fit to viewport
+    fitCanvasToViewport();
 });
