@@ -27,7 +27,7 @@
     var canvas = new fabric.Canvas('canvas', {
       width: 2000,
       height: 1500,
-      selection: false,
+      selection: true, // Make sure selection is enabled
       backgroundColor: '#f0f0f0',
       viewportTransform: [1, 0, 0, 1, 0, 0]
     });
@@ -46,11 +46,24 @@
     };
 
     canvas.on('mouse:down', function(event) {
-      isDragging = true;
-      previousMousePosition = {
-        x: event.e.clientX,
-        y: event.e.clientY
-      };
+      if (event.e.altKey) { // Check if the Alt key is pressed for panning
+        isDragging = true;
+        previousMousePosition = {
+          x: event.e.clientX,
+          y: event.e.clientY
+        };
+      } else { // Otherwise, create a circle at the click position
+        var pointer = canvas.getPointer(event.e);
+        var circle = new fabric.Circle({
+          left: pointer.x,
+          top: pointer.y,
+          radius: 20,
+          fill: 'blue',
+          originX: 'center',
+          originY: 'center'
+        });
+        canvas.add(circle);
+      }
     });
 
     canvas.on('mouse:move', function(event) {
