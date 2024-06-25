@@ -6,28 +6,28 @@ document.addEventListener("DOMContentLoaded", function() {
     const maxZoom = 20;
     const minZoom = 0.01;
 
-    // Set initial canvas size and adjust if necessary
-    function adjustCanvasSize() {
+    // Set canvas dimensions
+    canvas.setWidth(600);
+    canvas.setHeight(400);
+
+    // Adjust zoom level to fit canvas within browser window
+    function adjustZoomToFitCanvas() {
         const browserWidth = window.innerWidth;
         const browserHeight = window.innerHeight;
-        const canvasWidth = 1920;
-        const canvasHeight = 1080;
-        
+        const canvasWidth = canvas.getWidth();
+        const canvasHeight = canvas.getHeight();
+
         let scaleFactor = Math.min(browserWidth / canvasWidth, browserHeight / canvasHeight, 1);
-        
-        canvas.setWidth(canvasWidth * scaleFactor);
-        canvas.setHeight(canvasHeight * scaleFactor);
+
         canvas.setZoom(scaleFactor);
-        
         zoomLevel = scaleFactor;
         updateZoom();
-        updateRulerVisibility();
     }
-    
-    adjustCanvasSize();
-    
-    // Adjust canvas size on window resize
-    window.addEventListener('resize', adjustCanvasSize);
+
+    adjustZoomToFitCanvas();
+
+    // Adjust zoom level on window resize
+    window.addEventListener('resize', adjustZoomToFitCanvas);
 
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
@@ -39,18 +39,85 @@ document.addEventListener("DOMContentLoaded", function() {
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
-        
+
         // Adjust viewport transform to keep canvas centered
         updateViewportTransform();
-        
+
         // Update zoom level and percentage display
         zoomLevel = zoom;
         updateZoom();
     });
 
-    // Other existing event listeners...
+    // Add Text Button
+    document.getElementById('addText').addEventListener('click', function() {
+        const text = new fabric.Textbox('Sample Text', {
+            left: 50,
+            top: 50,
+            width: 200,
+            fontSize: 20,
+            fill: '#000',
+            fontFamily: 'Arial',
+            scaleX: 1,
+            scaleY: 1
+        });
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        showObjectDetails();
+    });
 
-    // Zoom in, zoom out, reset zoom buttons
+    // Add Image Button
+    document.getElementById('addImage').addEventListener('click', function() {
+        const url = prompt("Enter the image URL:");
+        const altText = prompt("Enter the alt text for the image:");
+        if (url) {
+            fabric.Image.fromURL(url, function(img) {
+                img.set({
+                    left: 50,
+                    top: 100,
+                    scaleX: 0.5,
+                    scaleY: 0.5,
+                    alt: altText
+                });
+                canvas.add(img);
+                canvas.setActiveObject(img);
+                showObjectDetails();
+            });
+        }
+    });
+
+    // Export HTML Button
+    document.getElementById('exportCode').addEventListener('click', function() {
+        const objects = canvas.getObjects();
+        let html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Your Page</title>\n</head>\n<body>\n';
+
+        objects.forEach(obj => {
+            if (obj.type === 'textbox') {
+                let tag = obj.heading || 'div';
+                html += `<${tag} style="position:absolute;left:${obj.left.toFixed(1)}px;top:${obj.top.toFixed(1)}px;font-size:${obj.fontSize.toFixed(1)}px;color:${obj.fill};font-family:${obj.fontFamily};">${obj.text}</${tag}>\n`;
+            } else if (obj.type === 'image') {
+                html += `<img src="${obj._element.src}" alt="${obj.alt || ''}" style="position:absolute;left:${obj.left.toFixed(1)}px;top:${obj.top.toFixed(1)}px;width:${(obj.width * obj.scaleX).toFixed(1)}px;height:${(obj.height * obj.scaleY).toFixed(1)}px;transform:rotate(${obj.angle.toFixed(1)}deg);">\n`;
+            }
+        });
+
+        html += '</body>\n</html>';
+        document.getElementById('htmlCode').value = html;
+    });
+
+    // Toggle Ruler Button
+    document.getElementById('toggleRuler').addEventListener('click', function() {
+        rulerVisible = !rulerVisible;
+        updateRulerVisibility();
+    });
+
+    // Ruler Interval Input
+    document.getElementById('rulerInterval').addEventListener('input', function() {
+        rulerInterval = parseInt(this.value);
+        if (rulerVisible) {
+            updateRulerVisibility();
+        }
+    });
+
+    // Zoom In Button
     document.getElementById('zoomIn').addEventListener('click', function() {
         zoomLevel *= 1.1;
         if (zoomLevel > maxZoom) zoomLevel = maxZoom;
@@ -59,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
         updateZoom();
     });
 
+    // Zoom Out Button
     document.getElementById('zoomOut').addEventListener('click', function() {
         zoomLevel *= 0.9;
         if (zoomLevel < minZoom) zoomLevel = minZoom;
@@ -67,6 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
         updateZoom();
     });
 
+    // Reset Zoom Button
     document.getElementById('resetZoom').addEventListener('click', function() {
         zoomLevel = 1;
         canvas.setZoom(zoomLevel);
@@ -74,7 +143,13 @@ document.addEventListener("DOMContentLoaded", function() {
         updateZoom();
     });
 
-    // Other existing functions...
+    // Update Canvas Size Button
+    document.getElementById('updateCanvasSize').addEventListener('click', function() {
+        const width = parseInt(document.getElementById('canvasWidth').value, 10);
+        const height = parseInt(document.getElementById('canvasHeight').value, 10);
+        canvas.setDimensions({ width: width, height: height });
+        updateRulerVisibility(); // Update ruler positions to match new canvas size
+    });
 
     function updateZoom() {
         document.getElementById('zoomPercentage').innerText = `${(zoomLevel * 100).toFixed(1)}%`;
@@ -148,9 +223,12 @@ document.addEventListener("DOMContentLoaded", function() {
         canvas.renderAll();
     }
 
-    // Other existing event handlers...
+    // Other event listeners to update object details...
+    canvas.on('selection:updated', showObjectDetails);
+    canvas.on('selection:created', showObjectDetails);
+    canvas.on('selection:cleared', clearObjectDetails);
 
-    // Ensure real-time updates for object properties
+    canvas.on('object:modified', showObjectDetails);
     canvas.on('object:scaling', function(e) {
         const activeObject = e.target;
         if (activeObject && activeObject.type === 'textbox') {
@@ -160,12 +238,14 @@ document.addEventListener("DOMContentLoaded", function() {
         showObjectDetails();
     });
 
-    // Other existing event handlers...
+    function showObjectDetails() {
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+            // Display object details...
+        }
+    }
 
+    function clearObjectDetails() {
+        // Clear object details display...
+    }
 });
-
-// Ensure canvas size adjustments on window resize
-window.addEventListener('resize', function() {
-    adjustCanvasSize();
-});
-
