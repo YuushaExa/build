@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('updateCanvasSize').addEventListener('click', function() {
         const width = parseInt(document.getElementById('canvasWidth').value, 10);
         const height = parseInt(document.getElementById('canvasHeight').value, 10);
-        canvas.setDimensions({ width: width, height: height });
+        canvas.setDimensions({ width: width, height: height }, { backstoreOnly: true });
         updateRulerVisibility(); // Update ruler positions to match new canvas size
     });
 
