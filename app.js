@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     canvas.setDimensions({ width: 1000, height: 1000 }, { cssOnly: true });
-    resizeCanvas();
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
@@ -328,14 +327,5 @@ document.addEventListener("DOMContentLoaded", function() {
         showObjectDetails();
     });
 
-    function resizeCanvas() {
-        const canvasContainer = document.querySelector('.canvas-container');
-        const clientWidth = canvasContainer.clientWidth;
-        const innerHeight = window.innerHeight; // viewport height
-        const side = Math.min(clientWidth, innerHeight, 1000) + "px";
-
-        canvas.setDimensions({ width: side, height: side }, { backstoreOnly: true });
-    }
-
-    window.addEventListener('resize', resizeCanvas);
+   
 });
