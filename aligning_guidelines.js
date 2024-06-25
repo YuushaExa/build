@@ -210,6 +210,5 @@ function initAligningGuidelines(canvas) {
   });
 }
 
-canvas.renderAll();
 initAligningGuidelines(canvas);
 initCenteringGuidelines(canvas);
