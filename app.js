@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
-    canvas.setDimensions({ width: 1000, height: 1000 }, { cssOnly: true });
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
