@@ -117,7 +117,7 @@ canvas.setHeight(800);
     document.getElementById('updateCanvasSize').addEventListener('click', function() {
         const width = parseInt(document.getElementById('canvasWidth').value, 10);
         const height = parseInt(document.getElementById('canvasHeight').value, 10);
-        canvas.setDimensions({ width: width, height: height }, { backstoreOnly: true });
+        canvas.setDimensions({ width: width, height: height });
         updateRulerVisibility(); // Update ruler positions to match new canvas size
     });
 
