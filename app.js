@@ -334,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const innerHeight = window.innerHeight; // viewport height
         const side = Math.min(clientWidth, innerHeight, 1000) + "px";
 
-        canvas.setDimensions({ width: side, height: side }, { backstoreOnly: true });
+        canvas.setDimensions({ width: side, height: side }, { cssOnly: true });
     }
 
     window.addEventListener('resize', resizeCanvas);
