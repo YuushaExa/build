@@ -31,6 +31,8 @@ display: inline-block;
 }
      .canvas-container {
             position: relative;
+         width: 500px;
+         height:500px
         }
         .ruler {
             position: absolute;
