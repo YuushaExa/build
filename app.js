@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", function() {
     function adjustCanvasSize() {
         const browserWidth = window.innerWidth;
         const browserHeight = window.innerHeight;
-        const canvasWidth = 600;
-        const canvasHeight = 400;
+        const canvasWidth = 1920;
+        const canvasHeight = 1080;
         
         let scaleFactor = Math.min(browserWidth / canvasWidth, browserHeight / canvasHeight, 1);
         
