@@ -3,27 +3,39 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
+   const initialWidth = canvas.getWidth();
+    const initialHeight = canvas.getHeight();
+
+    // Calculate the minimum zoom level to prevent the canvas from being smaller than its initial dimensions
+    const minZoomLevel = Math.min(
+        initialWidth / canvas.getWidth(),
+        initialHeight / canvas.getHeight()
+    );
 
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
         var delta = opt.e.deltaY;
         var zoom = canvas.getZoom();
         zoom *= 0.999 ** delta;
+
+        // Constrain zoom level between minZoomLevel and 20
         if (zoom > 20) zoom = 20;
-        if (zoom < 0.01) zoom = 0.01;
+        if (zoom < minZoomLevel) zoom = minZoomLevel;
+
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
-        
+
         // Adjust viewport transform to keep canvas centered
         var vpt = this.viewportTransform;
-        vpt[4] = canvas.getWidth() / 2 - (canvas.getWidth() * zoom / 2);
-        vpt[5] = canvas.getHeight() / 2 - (canvas.getHeight() * zoom / 2);
-        
+        vpt[4] = initialWidth / 2 - (initialWidth * zoom / 2);
+        vpt[5] = initialHeight / 2 - (initialHeight * zoom / 2);
+
         // Update zoom level and percentage display
         zoomLevel = zoom;
         updateZoom();
     });
+
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
