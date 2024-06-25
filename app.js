@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
-    canvas.setDimensions({ width: 1000, height: 1000 }, { cssOnly: true });
+    canvas.setWidth(500);
+canvas.setHeight(500);
 
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
