@@ -14,22 +14,12 @@ document.addEventListener("DOMContentLoaded", function() {
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
+        
+        // Adjust viewport transform to keep canvas centered
         var vpt = this.viewportTransform;
-        if (zoom < 400 / 1000) {
-            vpt[4] = 200 - 1000 * zoom / 2;
-            vpt[5] = 200 - 1000 * zoom / 2;
-        } else {
-            if (vpt[4] >= 0) {
-                vpt[4] = 0;
-            } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
-                vpt[4] = canvas.getWidth() - 1000 * zoom;
-            }
-            if (vpt[5] >= 0) {
-                vpt[5] = 0;
-            } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
-                vpt[5] = canvas.getHeight() - 1000 * zoom;
-            }
-        }
+        vpt[4] = canvas.getWidth() / 2 - (canvas.getWidth() * zoom / 2);
+        vpt[5] = canvas.getHeight() / 2 - (canvas.getHeight() * zoom / 2);
+        
         // Update zoom level and percentage display
         zoomLevel = zoom;
         updateZoom();
@@ -103,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomLevel *= 1.1;
         if (zoomLevel > 20) zoomLevel = 20;
         canvas.setZoom(zoomLevel);
+        updateViewportTransform();
         updateZoom();
     });
 
@@ -110,12 +101,14 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomLevel *= 0.9;
         if (zoomLevel < 0.01) zoomLevel = 0.01;
         canvas.setZoom(zoomLevel);
+        updateViewportTransform();
         updateZoom();
     });
 
     document.getElementById('resetZoom').addEventListener('click', function() {
         zoomLevel = 1;
         canvas.setZoom(zoomLevel);
+        updateViewportTransform();
         updateZoom();
     });
 
@@ -189,6 +182,13 @@ document.addEventListener("DOMContentLoaded", function() {
             horizontalRuler.innerHTML = '';
             verticalRuler.innerHTML = '';
         }
+    }
+
+    function updateViewportTransform() {
+        var vpt = canvas.viewportTransform;
+        vpt[4] = canvas.getWidth() / 2 - (canvas.getWidth() * zoomLevel / 2);
+        vpt[5] = canvas.getHeight() / 2 - (canvas.getHeight() * zoomLevel / 2);
+        canvas.renderAll();
     }
 
     canvas.on('selection:updated', showObjectDetails);
@@ -325,6 +325,4 @@ document.addEventListener("DOMContentLoaded", function() {
     canvas.on('object:moving', function(e) {
         showObjectDetails();
     });
-
-   
 });
