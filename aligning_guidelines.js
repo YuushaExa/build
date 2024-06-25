@@ -1,10 +1,4 @@
-/**
- * Should objects be aligned by a bounding box?
- * [Bug] Scaled objects sometimes can not be aligned by edges
- *
- */
 function initAligningGuidelines(canvas) {
-
   var ctx = canvas.getSelectionContext(),
       aligningLineOffset = 5,
       aligningLineMargin = 4,
@@ -34,8 +28,8 @@ function initAligningGuidelines(canvas) {
     ctx.lineWidth = aligningLineWidth;
     ctx.strokeStyle = aligningLineColor;
     ctx.beginPath();
-    ctx.moveTo(x1*zoom+viewportTransform[4], y1*zoom+viewportTransform[5]);
-    ctx.lineTo(x2*zoom+viewportTransform[4], y2*zoom+viewportTransform[5]);
+    ctx.moveTo(x1 * zoom + viewportTransform[4], y1 * zoom + viewportTransform[5]);
+    ctx.lineTo(x2 * zoom + viewportTransform[4], y2 * zoom + viewportTransform[5]);
     ctx.stroke();
     ctx.restore();
   }
@@ -59,14 +53,13 @@ function initAligningGuidelines(canvas) {
     zoom = canvas.getZoom();
   });
 
-  canvas.on('object:moving', function(e) {
-
+  canvas.on('object:moving', function (e) {
     var activeObject = e.target,
         canvasObjects = canvas.getObjects(),
         activeObjectCenter = activeObject.getCenterPoint(),
         activeObjectLeft = activeObjectCenter.x,
         activeObjectTop = activeObjectCenter.y,
-        activeObjectBoundingRect = activeObject.getBoundingRect(),
+        activeObjectBoundingRect = activeObject.getBoundingRect(true), // use true to account for transformations
         activeObjectHeight = activeObjectBoundingRect.height / viewportTransform[3],
         activeObjectWidth = activeObjectBoundingRect.width / viewportTransform[0],
         horizontalInTheRange = false,
@@ -75,17 +68,13 @@ function initAligningGuidelines(canvas) {
 
     if (!transform) return;
 
-    // It should be trivial to DRY this up by encapsulating (repeating) creation of x1, x2, y1, and y2 into functions,
-    // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
-
     for (var i = canvasObjects.length; i--; ) {
-
       if (canvasObjects[i] === activeObject) continue;
 
       var objectCenter = canvasObjects[i].getCenterPoint(),
           objectLeft = objectCenter.x,
           objectTop = objectCenter.y,
-          objectBoundingRect = canvasObjects[i].getBoundingRect(),
+          objectBoundingRect = canvasObjects[i].getBoundingRect(true), // use true to account for transformations
           objectHeight = objectBoundingRect.height / viewportTransform[3],
           objectWidth = objectBoundingRect.width / viewportTransform[0];
 
@@ -189,11 +178,11 @@ function initAligningGuidelines(canvas) {
     }
   });
 
-  canvas.on('before:render', function() {
+  canvas.on('before:render', function () {
     canvas.clearContext(canvas.contextTop);
   });
 
-  canvas.on('after:render', function() {
+  canvas.on('after:render', function () {
     for (var i = verticalLines.length; i--; ) {
       drawVerticalLine(verticalLines[i]);
     }
@@ -204,7 +193,7 @@ function initAligningGuidelines(canvas) {
     verticalLines.length = horizontalLines.length = 0;
   });
 
-  canvas.on('mouse:up', function() {
+  canvas.on('mouse:up', function () {
     verticalLines.length = horizontalLines.length = 0;
     canvas.renderAll();
   });
