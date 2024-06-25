@@ -4,55 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
 
-    // Mouse wheel zoom
-    canvas.on('mouse:wheel', function(opt) {
-        var delta = opt.e.deltaY;
-        var zoom = canvas.getZoom();
-        zoom *= 0.999 ** delta;
-        if (zoom > 20) zoom = 20;
-        if (zoom < 0.01) zoom = 0.01;
-        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-        opt.e.preventDefault();
-        opt.e.stopPropagation();
-        var vpt = this.viewportTransform;
-        if (zoom < 400 / 1000) {
-            vpt[4] = 200 - 1000 * zoom / 2;
-            vpt[5] = 200 - 1000 * zoom / 2;
-        } else {
-            if (vpt[4] >= 0) {
-                vpt[4] = 0;
-            } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
-                vpt[4] = canvas.getWidth() - 1000 * zoom;
-            }
-            if (vpt[5] >= 0) {
-                vpt[5] = 0;
-            } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
-                vpt[5] = canvas.getHeight() - 1000 * zoom;
-            }
-        }
-        // Update zoom level and percentage display
-        zoomLevel = zoom;
-        updateZoom();
-    });
-
-canvas.on('object:moving', function (e) {
-  var obj = e.target;
-  // if object is too big ignore
-  if(obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
-    return;
-  }
-  obj.setCoords();
-  // top-left  corner
-  if(obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
-    obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
-    obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
-  }
-  // bot-right corner
-  if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
-    obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
-    obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
-  }
-});
+    
     
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
