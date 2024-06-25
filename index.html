@@ -48,21 +48,21 @@
     canvas.on('mouse:down', function(event) {
       isDragging = true;
       previousMousePosition = {
-        x: event.clientX,
-        y: event.clientY
+        x: event.e.clientX,
+        y: event.e.clientY
       };
     });
 
     canvas.on('mouse:move', function(event) {
       if (isDragging) {
         var deltaMove = {
-          x: event.clientX - previousMousePosition.x,
-          y: event.clientY - previousMousePosition.y
+          x: event.e.clientX - previousMousePosition.x,
+          y: event.e.clientY - previousMousePosition.y
         };
 
         previousMousePosition = {
-          x: event.clientX,
-          y: event.clientY
+          x: event.e.clientX,
+          y: event.e.clientY
         };
 
         canvas.relativePan(deltaMove);
@@ -74,14 +74,14 @@
     });
 
     canvas.on('mouse:wheel', function(event) {
-      var delta = event.delta;
+      var delta = event.e.deltaY;
       var zoom = canvas.getZoom();
       zoom *= 0.999 ** delta;
       if (zoom > 0.1) {
         canvas.setZoom(zoom);
       }
-      event.preventDefault();
-      event.stopPropagation();
+      event.e.preventDefault();
+      event.e.stopPropagation();
     });
   </script>
 </body>
