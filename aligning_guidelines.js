@@ -209,3 +209,7 @@ function initAligningGuidelines(canvas) {
     canvas.renderAll();
   });
 }
+
+canvas.renderAll();
+initAligningGuidelines(canvas);
+initCenteringGuidelines(canvas);
