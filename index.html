@@ -1,45 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web App Website Builder</title>
-    <link rel="stylesheet" href="style.css">
+  <title>FabricJS Workspace</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
+  <style>
+    #canvas-container {
+      width: 800px;
+      height: 600px;
+      border: 1px solid #ccc;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-    <div id="container">
-        <div id="sidebar">
-            <button id="addText">Add Text</button>
-            <button id="addImage">Add Image</button>
-            <button id="exportCode">Get HTML Code</button>
-                <button id="toggleRuler">Toggle Ruler</button>
-                <label for="rulerInterval">Ruler Interval: </label>
-    <input type="number" id="rulerInterval" value="50">
-            <div id="objectDetails"></div>
-            <label for="canvasWidth">Canvas Width: </label>
-<input type="number" id="canvasWidth" value="800">
-<label for="canvasHeight">Canvas Height: </label>
-<input type="number" id="canvasHeight" value="600">
-<button id="updateCanvasSize">Update Canvas Size</button>
+  <div id="canvas-container">
+    <canvas id="canvas"></canvas>
+  </div>
 
-  <div class="controls">
-                <button id="zoomIn">Zoom In</button>
-        <button id="zoomOut">Zoom Out</button>
-        <span id="zoomPercentage">100%</span>
-        <button id="resetZoom">Reset Zoom</button>
-    </div>
+  <script>
+    var canvas = new fabric.Canvas('canvas', {
+      width: 2000,
+      height: 1500,
+      selection: false,
+      backgroundColor: '#f0f0f0',
+      viewportTransform: [1, 0, 0, 1, 0, 0]
+    });
 
-            
-        </div>
-        <div id="canvas-container">
-                     <div id="horizontalRuler" class="ruler" style="height: 20px; top: -20px;"></div>
-        <div id="verticalRuler" class="ruler" style="width: 20px; left: -20px;"></div>
-            <canvas id="canvas" width="800" height="600"></canvas>
-        </div>
-    </div>
-    <textarea id="htmlCode" readonly></textarea>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/460/fabric.min.js"></script>
-    <script src="app.js"></script>
-        
+    var container = document.getElementById('canvas-container');
+    var containerWidth = container.offsetWidth;
+    var containerHeight = container.offsetHeight;
+
+    canvas.setDimensions({ width: containerWidth, height: containerHeight });
+
+    // Zoom and pan functionality
+    var isDragging = false;
+    var previousMousePosition = {
+      x: 0,
+      y: 0
+    };
+
+    canvas.on('mouse:down', function(event) {
+      isDragging = true;
+      previousMousePosition = {
+        x: event.clientX,
+        y: event.clientY
+      };
+    });
+
+    canvas.on('mouse:move', function(event) {
+      if (isDragging) {
+        var deltaMove = {
+          x: event.clientX - previousMousePosition.x,
+          y: event.clientY - previousMousePosition.y
+        };
+
+        previousMousePosition = {
+          x: event.clientX,
+          y: event.clientY
+        };
+
+        canvas.relativePan(deltaMove);
+      }
+    });
+
+    canvas.on('mouse:up', function() {
+      isDragging = false;
+    });
+
+    canvas.on('mouse:wheel', function(event) {
+      var delta = event.delta;
+      var zoom = canvas.getZoom();
+      zoom *= 0.999 ** delta;
+      if (zoom > 0.1) {
+        canvas.setZoom(zoom);
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    });
+  </script>
 </body>
 </html>
