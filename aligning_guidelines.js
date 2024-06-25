@@ -1,7 +1,7 @@
 
 function initAligningGuidelines(canvas) {
 
-    var ctx = canvas.getSelectionContext(),
+    var ctx = canvas.contextTop(),
         aligningLineOffset = 5,
         aligningLineMargin = 4,
         aligningLineWidth = 1,
@@ -595,7 +595,7 @@ function initx(canvas) {
         centerLineMargin = 4,
         centerLineColor = 'rgba(255,0,241,0.5)',
         centerLineWidth = 1,
-        ctx = canvas.getSelectionContext(),
+        ctx = canvas.contextTop(),
         viewportTransform;
 
     for (var i = canvasWidthCenter - centerLineMargin, len = canvasWidthCenter + centerLineMargin; i <= len; i++) {
