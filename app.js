@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
-    canvas.setDimensions({ width: 1000, height: 1000 }, { backstoreOnly: true });
+    canvas.setDimensions({ width: 1000, height: 1000 }, { cssOnly: true });
     resizeCanvas();
     let rulerVisible = false;
     let rulerInterval = 50;
@@ -334,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const innerHeight = window.innerHeight; // viewport height
         const side = Math.min(clientWidth, innerHeight, 1000) + "px";
 
-        canvas.setDimensions({ width: side, height: side }, { cssOnly: true });
+        canvas.setDimensions({ width: side, height: side }, { backstoreOnly: true });
     }
 
     window.addEventListener('resize', resizeCanvas);
