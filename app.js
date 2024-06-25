@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     canvas.setDimensions({ width: 1000, height: 1000 }, { backstoreOnly: true });
-resizeCanvas();
+    resizeCanvas();
     let rulerVisible = false;
     let rulerInterval = 50;
     let zoomLevel = 1; // Track the current zoom level
@@ -119,6 +119,13 @@ resizeCanvas();
         zoomLevel = 1;
         canvas.setZoom(zoomLevel);
         updateZoom();
+    });
+
+    document.getElementById('updateCanvasSize').addEventListener('click', function() {
+        const width = parseInt(document.getElementById('canvasWidth').value, 10);
+        const height = parseInt(document.getElementById('canvasHeight').value, 10);
+        canvas.setDimensions({ width: width, height: height });
+        updateRulerVisibility(); // Update ruler positions to match new canvas size
     });
 
     function updateZoom() {
@@ -321,15 +328,14 @@ resizeCanvas();
         showObjectDetails();
     });
 
- function resizeCanvas() {
-  const { clientWidth } = $('.canvas-container')[0];
-  const { innerHeight } = window; // viewport height
-  const side = Math.min(clientWidth, innerHeight, 1000) + "px";
+    function resizeCanvas() {
+        const canvasContainer = document.querySelector('.canvas-container');
+        const clientWidth = canvasContainer.clientWidth;
+        const innerHeight = window.innerHeight; // viewport height
+        const side = Math.min(clientWidth, innerHeight, 1000) + "px";
 
-  canvas.setDimensions({ width: side, height: side }, { cssOnly: true });
-}
+        canvas.setDimensions({ width: side, height: side }, { backstoreOnly: true });
+    }
 
-$(window).resize(resizeCanvas);
-
-    
+    window.addEventListener('resize', resizeCanvas);
 });
