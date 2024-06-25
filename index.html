@@ -1,108 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>FabricJS Workspace</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
-  <style>
-    #canvas-container {
-      width: 800px;
-      height: 600px;
-      border: 1px solid #ccc;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #canvas {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App Website Builder</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="canvas-container">
-    <canvas id="canvas"></canvas>
-  </div>
+    <div id="container">
+        <div id="sidebar">
+            <button id="addText">Add Text</button>
+            <button id="addImage">Add Image</button>
+            <button id="exportCode">Get HTML Code</button>
+                <button id="toggleRuler">Toggle Ruler</button>
+                <label for="rulerInterval">Ruler Interval: </label>
+    <input type="number" id="rulerInterval" value="50">
+            <div id="objectDetails"></div>
+            <label for="canvasWidth">Canvas Width: </label>
+<input type="number" id="canvasWidth" value="800">
+<label for="canvasHeight">Canvas Height: </label>
+<input type="number" id="canvasHeight" value="600">
+<button id="updateCanvasSize">Update Canvas Size</button>
 
-  <script>
-    var canvas = new fabric.Canvas('canvas', {
-      width: 2000,
-      height: 1500,
-      selection: true, // Make sure selection is enabled
-      backgroundColor: '#f0f0f0',
-      viewportTransform: [1, 0, 0, 1, 0, 0]
-    });
+  <div class="controls">
+                <button id="zoomIn">Zoom In</button>
+        <button id="zoomOut">Zoom Out</button>
+        <span id="zoomPercentage">100%</span>
+        <button id="resetZoom">Reset Zoom</button>
+    </div>
 
-    var container = document.getElementById('canvas-container');
-    var containerWidth = container.offsetWidth;
-    var containerHeight = container.offsetHeight;
-
-    canvas.setDimensions({ width: containerWidth, height: containerHeight });
-
-    // Zoom and pan functionality
-    var isDragging = false;
-    var previousMousePosition = {
-      x: 0,
-      y: 0
-    };
-
-    canvas.on('mouse:down', function(event) {
-      if (event.e.altKey) { // Check if the Alt key is pressed for panning
-        isDragging = true;
-        previousMousePosition = {
-          x: event.e.clientX,
-          y: event.e.clientY
-        };
-      } else { // Otherwise, create a circle at the click position
-        var pointer = canvas.getPointer(event.e);
-        var circle = new fabric.Circle({
-          left: pointer.x,
-          top: pointer.y,
-          radius: 20,
-          fill: 'blue',
-          originX: 'center',
-          originY: 'center'
-        });
-        canvas.add(circle);
-      }
-    });
-
-    canvas.on('mouse:move', function(event) {
-      if (isDragging) {
-        var deltaMove = {
-          x: event.e.clientX - previousMousePosition.x,
-          y: event.e.clientY - previousMousePosition.y
-        };
-
-        previousMousePosition = {
-          x: event.e.clientX,
-          y: event.e.clientY
-        };
-
-        canvas.relativePan(new fabric.Point(deltaMove.x, deltaMove.y));
-      }
-    });
-
-    canvas.on('mouse:up', function() {
-      isDragging = false;
-    });
-
-    canvas.on('mouse:wheel', function(event) {
-      var delta = event.e.deltaY;
-      var zoom = canvas.getZoom();
-      zoom *= 0.999 ** delta;
-      if (zoom > 0.1) {
-        canvas.setZoom(zoom);
-      }
-      event.e.preventDefault();
-      event.e.stopPropagation();
-    });
-
-    // Ensure the canvas is redrawn when the window is resized
-    window.addEventListener('resize', function() {
-      var containerWidth = container.offsetWidth;
-      var containerHeight = container.offsetHeight;
-      canvas.setDimensions({ width: containerWidth, height: containerHeight });
-    });
-  </script>
+            
+        </div>
+        <div id="canvas-container">
+                     <div id="horizontalRuler" class="ruler" style="height: 20px; top: -20px;"></div>
+        <div id="verticalRuler" class="ruler" style="width: 20px; left: -20px;"></div>
+            <canvas id="canvas" width="800" height="600"></canvas>
+        </div>
+    </div>
+    <textarea id="htmlCode" readonly></textarea>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/460/fabric.min.js"></script>
+    <script src="app.js"></script>
+        
 </body>
 </html>
