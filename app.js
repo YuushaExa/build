@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
- document.getElementById('exportCode').addEventListener('click', function() {
+document.getElementById('exportCode').addEventListener('click', function() {
     const objects = canvas.getObjects();
     const canvasWidth = canvas.getWidth();
     const canvasHeight = canvas.getHeight();
@@ -73,18 +73,20 @@ document.addEventListener("DOMContentLoaded", function() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page</title>
     <style>
-        body { margin: 0; padding: 0; position: relative; }
+        body { margin: 0; padding: 0; }
+        .canvas-container { position: relative; width: 100vw; height: 100vh; }
         .canvas-object { position: absolute; }
     </style>
 </head>
 <body>
+<div class="canvas-container">
 `;
 
     objects.forEach(obj => {
+        const leftPercent = (obj.left / canvasWidth) * 100;
+        const topPercent = (obj.top / canvasHeight) * 100;
         if (obj.type === 'textbox') {
             const tag = obj.heading || 'div';
-            const leftPercent = (obj.left / canvasWidth) * 100;
-            const topPercent = (obj.top / canvasHeight) * 100;
             html += `<${tag} class="canvas-object" style="
                 left: ${leftPercent.toFixed(1)}%;
                 top: ${topPercent.toFixed(1)}%;
@@ -94,8 +96,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 transform: rotate(${obj.angle.toFixed(1)}deg);
             ">${sanitizeHTML(obj.text)}</${tag}>\n`;
         } else if (obj.type === 'image') {
-            const leftPercent = (obj.left / canvasWidth) * 100;
-            const topPercent = (obj.top / canvasHeight) * 100;
             const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
             const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
             html += `<img class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || '')}" style="
@@ -108,7 +108,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    html += `</body>
+    html += `</div>
+</body>
 </html>`;
 
     document.getElementById('htmlCode').value = html;
@@ -125,6 +126,7 @@ function sanitizeURL(url) {
     element.href = url;
     return element.href;
 }
+
 
 
     document.getElementById('toggleRuler').addEventListener('click', function() {
