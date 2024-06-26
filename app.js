@@ -73,9 +73,13 @@ document.getElementById('exportCode').addEventListener('click', function() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page</title>
     <style>
-        body { margin: 0; padding: 0;display: flex; }
-        .canvas-container { position: relative; width: 100vw; height: 100vw;  max-width: 100%; }
+        body { margin: 0; padding: 0; }
+        .canvas-container { position: relative; width: 100vw; height: 100vh; }
         .canvas-object { position: absolute; }
+        @media (max-width: 600px) {
+            .canvas-container { width: 100%; height: auto; }
+            .canvas-object { transform-origin: top left; }
+        }
     </style>
 </head>
 <body>
@@ -90,7 +94,7 @@ document.getElementById('exportCode').addEventListener('click', function() {
             html += `<${tag} class="canvas-object" style="
                 left: ${leftPercent.toFixed(1)}%;
                 top: ${topPercent.toFixed(1)}%;
-                font-size: ${obj.fontSize.toFixed(1)}px;
+                font-size: ${(obj.fontSize / 16).toFixed(1)}rem;
                 color: ${obj.fill};
                 font-family: ${obj.fontFamily};
                 transform: rotate(${obj.angle.toFixed(1)}deg);
@@ -126,6 +130,7 @@ function sanitizeURL(url) {
     element.href = url;
     return element.href;
 }
+
 
 
 
