@@ -75,44 +75,52 @@ document.getElementById('exportCode').addEventListener('click', function() {
     <style>
         body { margin: 0; padding: 0; }
         .canvas-container { position: relative; width: 100vw; height: 100vh; }
-        .canvas-object { position: absolute; }
         @media (max-width: 600px) {
             .canvas-container { width: 100%; height: auto; }
             .canvas-object { transform-origin: top left; }
         }
-    </style>
-</head>
-<body>
-<div class="canvas-container">
 `;
 
-    objects.forEach(obj => {
+    let bodyContent = '<div class="canvas-container">\n';
+
+    objects.forEach((obj, index) => {
+        const uniqueId = `object-${index}`;
         const leftPercent = (obj.left / canvasWidth) * 100;
         const topPercent = (obj.top / canvasHeight) * 100;
+        const angle = obj.angle ? `transform: rotate(${obj.angle.toFixed(1)}deg);` : '';
+
         if (obj.type === 'textbox') {
             const tag = obj.heading || 'div';
-            html += `<${tag} class="canvas-object" style="
-                left: ${leftPercent.toFixed(1)}%;
-                top: ${topPercent.toFixed(1)}%;
-                font-size: ${(obj.fontSize / 16).toFixed(1)}rem;
-                color: ${obj.fill};
-                font-family: ${obj.fontFamily};
-                transform: rotate(${obj.angle.toFixed(1)}deg);
-            ">${sanitizeHTML(obj.text)}</${tag}>\n`;
+            html += `        #${uniqueId} {
+            left: ${leftPercent.toFixed(1)}%;
+            top: ${topPercent.toFixed(1)}%;
+            font-size: ${(obj.fontSize / 16).toFixed(1)}rem;
+            color: ${obj.fill};
+            font-family: ${obj.fontFamily};
+            position: absolute;
+            ${angle}
+        }\n`;
+            bodyContent += `<${tag} id="${uniqueId}" class="canvas-object">${sanitizeHTML(obj.text)}</${tag}>\n`;
         } else if (obj.type === 'image') {
             const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
             const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
-            html += `<img class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || '')}" style="
-                left: ${leftPercent.toFixed(1)}%;
-                top: ${topPercent.toFixed(1)}%;
-                width: ${widthPercent.toFixed(1)}%;
-                height: ${heightPercent.toFixed(1)}%;
-                transform: rotate(${obj.angle.toFixed(1)}deg);
-            ">\n`;
+            html += `        #${uniqueId} {
+            left: ${leftPercent.toFixed(1)}%;
+            top: ${topPercent.toFixed(1)}%;
+            width: ${widthPercent.toFixed(1)}%;
+            height: ${heightPercent.toFixed(1)}%;
+            position: absolute;
+            ${angle}
+        }\n`;
+            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || '')}">\n`;
         }
     });
 
-    html += `</div>
+    html += `    </style>
+</head>
+<body>
+${bodyContent}
+</div>
 </body>
 </html>`;
 
