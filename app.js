@@ -62,22 +62,70 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    document.getElementById('exportCode').addEventListener('click', function() {
-        const objects = canvas.getObjects();
-        let html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Your Page</title>\n</head>\n<body>\n';
+ document.getElementById('exportCode').addEventListener('click', function() {
+    const objects = canvas.getObjects();
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+    let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Page</title>
+    <style>
+        body { margin: 0; padding: 0; position: relative; }
+        .canvas-object { position: absolute; }
+    </style>
+</head>
+<body>
+`;
 
-        objects.forEach(obj => {
-            if (obj.type === 'textbox') {
-                let tag = obj.heading || 'div';
-                html += `<${tag} style="position:absolute;left:${obj.left.toFixed(1)}px;top:${obj.top.toFixed(1)}px;font-size:${obj.fontSize.toFixed(1)}px;color:${obj.fill};font-family:${obj.fontFamily};">${obj.text}</${tag}>\n`;
-            } else if (obj.type === 'image') {
-                html += `<img src="${obj._element.src}" alt="${obj.alt || ''}" style="position:absolute;left:${obj.left.toFixed(1)}px;top:${obj.top.toFixed(1)}px;width:${(obj.width * obj.scaleX).toFixed(1)}px;height:${(obj.height * obj.scaleY).toFixed(1)}px;transform:rotate(${obj.angle.toFixed(1)}deg);">\n`;
-            }
-        });
-
-        html += '</body>\n</html>';
-        document.getElementById('htmlCode').value = html;
+    objects.forEach(obj => {
+        if (obj.type === 'textbox') {
+            const tag = obj.heading || 'div';
+            const leftPercent = (obj.left / canvasWidth) * 100;
+            const topPercent = (obj.top / canvasHeight) * 100;
+            html += `<${tag} class="canvas-object" style="
+                left: ${leftPercent.toFixed(1)}%;
+                top: ${topPercent.toFixed(1)}%;
+                font-size: ${obj.fontSize.toFixed(1)}px;
+                color: ${obj.fill};
+                font-family: ${obj.fontFamily};
+                transform: rotate(${obj.angle.toFixed(1)}deg);
+            ">${sanitizeHTML(obj.text)}</${tag}>\n`;
+        } else if (obj.type === 'image') {
+            const leftPercent = (obj.left / canvasWidth) * 100;
+            const topPercent = (obj.top / canvasHeight) * 100;
+            const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
+            const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
+            html += `<img class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || '')}" style="
+                left: ${leftPercent.toFixed(1)}%;
+                top: ${topPercent.toFixed(1)}%;
+                width: ${widthPercent.toFixed(1)}%;
+                height: ${heightPercent.toFixed(1)}%;
+                transform: rotate(${obj.angle.toFixed(1)}deg);
+            ">\n`;
+        }
     });
+
+    html += `</body>
+</html>`;
+
+    document.getElementById('htmlCode').value = html;
+});
+
+function sanitizeHTML(html) {
+    const element = document.createElement('div');
+    element.innerText = html;
+    return element.innerHTML;
+}
+
+function sanitizeURL(url) {
+    const element = document.createElement('a');
+    element.href = url;
+    return element.href;
+}
+
 
     document.getElementById('toggleRuler').addEventListener('click', function() {
         rulerVisible = !rulerVisible;
