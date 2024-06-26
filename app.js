@@ -73,7 +73,7 @@ document.getElementById('exportCode').addEventListener('click', function() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page</title>
     <style>
-        body { margin: 0; padding: 0; }
+        body { margin: 0; padding: 0;display: flex; }
         .canvas-container { position: relative; width: 100vw; height: 100vw;  max-width: 100%; }
         .canvas-object { position: absolute; }
     </style>
