@@ -75,42 +75,20 @@ document.getElementById('exportCode').addEventListener('click', function() {
 });
 
 function generateStyles(objects, canvasWidth, canvasHeight) {
-    let styles = `
-body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
-.canvas-container { position: relative; width: 100vw; height: 100vh; }
-.canvas-object { position: absolute; }
-@media (max-width: 600px) {
-    .canvas-container { width: 100%; height: auto; }
-    .canvas-object { transform-origin: top left; }
-}`;
+    let styles = 'body{margin:0;padding:0;font-family:Arial,sans-serif;}.canvas-container{position:relative;width:100vw;height:100vh;}.canvas-object{position:absolute;}@media(max-width:600px){.canvas-container{width:100%;height:auto;}.canvas-object{transform-origin:top left;}}';
 
     objects.forEach((obj, index) => {
         const uniqueId = `object-${index}`;
         const leftPercent = (obj.left / canvasWidth) * 100;
         const topPercent = (obj.top / canvasHeight) * 100;
-        const angle = obj.angle ? `transform: rotate(${obj.angle.toFixed(1)}deg);` : '';
+        const angle = obj.angle ? `transform:rotate(${obj.angle.toFixed(1)}deg);` : '';
 
         if (obj.type === 'textbox') {
-            styles += `
-#${uniqueId} {
-    left: ${leftPercent.toFixed(1)}%;
-    top: ${topPercent.toFixed(1)}%;
-    font-size: ${(obj.fontSize / 16).toFixed(1)}rem;
-    color: ${obj.fill};
-    font-family: ${obj.fontFamily};
-    ${angle}
-}`;
+            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;font-size:${(obj.fontSize / 16).toFixed(1)}rem;color:${obj.fill};font-family:${obj.fontFamily};${angle}}`;
         } else if (obj.type === 'image') {
             const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
             const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
-            styles += `
-#${uniqueId} {
-    left: ${leftPercent.toFixed(1)}%;
-    top: ${topPercent.toFixed(1)}%;
-    width: ${widthPercent.toFixed(1)}%;
-    height: ${heightPercent.toFixed(1)}%;
-    ${angle}
-}`;
+            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;width:${widthPercent.toFixed(1)}%;height:${heightPercent.toFixed(1)}%;${angle}}`;
         }
     });
 
@@ -118,15 +96,15 @@ body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
 }
 
 function generateBodyContent(objects, canvasWidth, canvasHeight) {
-    let bodyContent = '<div class="canvas-container">\n';
+    let bodyContent = '<div class="canvas-container">';
 
     objects.forEach((obj, index) => {
         const uniqueId = `object-${index}`;
         if (obj.type === 'textbox') {
             const tag = obj.heading || 'div';
-            bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>\n`;
+            bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>`;
         } else if (obj.type === 'image') {
-            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">\n`;
+            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">`;
         }
     });
 
@@ -135,22 +113,7 @@ function generateBodyContent(objects, canvasWidth, canvasHeight) {
 }
 
 function generateHTML(styles, bodyContent) {
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A dynamically generated HTML page with objects from the canvas.">
-    <meta name="keywords" content="HTML, canvas, objects, dynamic content">
-    <title>Generated Page</title>
-    <style>
-${styles}
-    </style>
-</head>
-<body>
-${bodyContent}
-</body>
-</html>`;
+    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A dynamically generated HTML page with objects from the canvas."><meta name="keywords" content="HTML, canvas, objects, dynamic content"><title>Generated Page</title><style>${styles}</style></head><body>${bodyContent}</body></html>`;
 }
 
 function sanitizeHTML(html) {
@@ -164,6 +127,7 @@ function sanitizeURL(url) {
     element.href = url;
     return element.href;
 }
+
 
 
 
