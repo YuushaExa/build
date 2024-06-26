@@ -76,14 +76,13 @@ document.getElementById('exportCode').addEventListener('click', function() {
 
 function generateStyles(objects, canvasWidth, canvasHeight) {
     let styles = `
-        body { margin: 0; padding: 0; }
-        .canvas-container { position: relative; width: 100vw; height: 100vh; }
-        .canvas-object { position: absolute; }
-        @media (max-width: 600px) {
-            .canvas-container { width: 100%; height: auto; }
-            .canvas-object { transform-origin: top left; }
-        }
-    `;
+body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+.canvas-container { position: relative; width: 100vw; height: 100vh; }
+.canvas-object { position: absolute; }
+@media (max-width: 600px) {
+    .canvas-container { width: 100%; height: auto; }
+    .canvas-object { transform-origin: top left; }
+}`;
 
     objects.forEach((obj, index) => {
         const uniqueId = `object-${index}`;
@@ -93,27 +92,25 @@ function generateStyles(objects, canvasWidth, canvasHeight) {
 
         if (obj.type === 'textbox') {
             styles += `
-                #${uniqueId} {
-                    left: ${leftPercent.toFixed(1)}%;
-                    top: ${topPercent.toFixed(1)}%;
-                    font-size: ${(obj.fontSize / 16).toFixed(1)}rem;
-                    color: ${obj.fill};
-                    font-family: ${obj.fontFamily};
-                    ${angle}
-                }
-            `;
+#${uniqueId} {
+    left: ${leftPercent.toFixed(1)}%;
+    top: ${topPercent.toFixed(1)}%;
+    font-size: ${(obj.fontSize / 16).toFixed(1)}rem;
+    color: ${obj.fill};
+    font-family: ${obj.fontFamily};
+    ${angle}
+}`;
         } else if (obj.type === 'image') {
             const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
             const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
             styles += `
-                #${uniqueId} {
-                    left: ${leftPercent.toFixed(1)}%;
-                    top: ${topPercent.toFixed(1)}%;
-                    width: ${widthPercent.toFixed(1)}%;
-                    height: ${heightPercent.toFixed(1)}%;
-                    ${angle}
-                }
-            `;
+#${uniqueId} {
+    left: ${leftPercent.toFixed(1)}%;
+    top: ${topPercent.toFixed(1)}%;
+    width: ${widthPercent.toFixed(1)}%;
+    height: ${heightPercent.toFixed(1)}%;
+    ${angle}
+}`;
         }
     });
 
@@ -129,7 +126,7 @@ function generateBodyContent(objects, canvasWidth, canvasHeight) {
             const tag = obj.heading || 'div';
             bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>\n`;
         } else if (obj.type === 'image') {
-            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || '')}" role="img">\n`;
+            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">\n`;
         }
     });
 
@@ -143,13 +140,15 @@ function generateHTML(styles, bodyContent) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Page</title>
+    <meta name="description" content="A dynamically generated HTML page with objects from the canvas.">
+    <meta name="keywords" content="HTML, canvas, objects, dynamic content">
+    <title>Generated Page</title>
     <style>
-        ${styles}
+${styles}
     </style>
 </head>
 <body>
-    ${bodyContent}
+${bodyContent}
 </body>
 </html>`;
 }
@@ -165,6 +164,7 @@ function sanitizeURL(url) {
     element.href = url;
     return element.href;
 }
+
 
 
 
