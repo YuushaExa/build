@@ -74,7 +74,7 @@ document.getElementById('exportCode').addEventListener('click', function() {
     <title>Your Page</title>
     <style>
         body { margin: 0; padding: 0; }
-        .canvas-container { position: relative; width: 100vw; height: 100vh; }
+        .canvas-container { position: relative; width: 100vw; height: 100vw;  max-width: 100%; }
         .canvas-object { position: absolute; }
     </style>
 </head>
