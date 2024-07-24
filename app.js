@@ -29,7 +29,8 @@ if (zoom < 400 / 1000) {
   } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
     vpt[5] = canvas.getHeight() - 1000 * zoom;
   }
-})
+}
+    })
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
