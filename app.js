@@ -2,38 +2,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
     let rulerInterval = 50;
-    let zoomLevel = 1;
-    const baseWidth = 1920;
-    const baseHeight = 1080;
+    canvas.setWidth(960);
+    canvas.setHeight(540);
 
-    function updateZoomPercent() {
-        document.getElementById('zoomPercent').innerText = `Zoom: ${(zoomLevel * 100).toFixed(0)}%`;
-    }
-
-    function setCanvasZoom(zoom) {
-        canvas.setZoom(zoom);
-        canvas.setWidth(baseWidth * zoom);
-        canvas.setHeight(baseHeight * zoom);
-        updateZoomPercent();
-        canvas.renderAll();
-    }
-
-    setCanvasZoom(0.5); // Initial zoom level to match 960x540
-
-    document.getElementById('zoomIn').addEventListener('click', function() {
-        zoomLevel = Math.min(zoomLevel + 0.1, 2);
-        setCanvasZoom(zoomLevel);
-    });
-
-    document.getElementById('zoomOut').addEventListener('click', function() {
-        zoomLevel = Math.max(zoomLevel - 0.1, 0.1);
-        setCanvasZoom(zoomLevel);
-    });
-
-    document.getElementById('resetZoom').addEventListener('click', function() {
-        zoomLevel = 1;
-        setCanvasZoom(zoomLevel);
-    });
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
@@ -210,7 +181,7 @@ function sanitizeURL(url) {
     canvas.on('object:rotating', showObjectDetails);
     canvas.on('object:moving', showObjectDetails);
 
-     function showObjectDetails() {
+    function showObjectDetails() {
         const activeObject = canvas.getActiveObject();
         const details = document.getElementById('objectDetails');
         details.innerHTML = '';
