@@ -18,11 +18,16 @@ body {
 }
 
 #canvas-container {
-display: inline-block;
-    align-items: center;
-                position: relative;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#canvas {
     border: 1px solid #ccc;
 }
+
 
 #htmlCode {
     width: 90%;
