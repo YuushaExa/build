@@ -5,7 +5,31 @@ document.addEventListener("DOMContentLoaded", function() {
     canvas.setWidth(960);
     canvas.setHeight(540);
 
-
+canvas.on('mouse:wheel', function(opt) {
+var delta = opt.e.deltaY;
+var zoom = canvas.getZoom();
+zoom *= 0.999 ** delta;
+if (zoom > 20) zoom = 20;
+if (zoom < 0.01) zoom = 0.01;
+canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+opt.e.preventDefault();
+opt.e.stopPropagation();
+var vpt = this.viewportTransform;
+if (zoom < 400 / 1000) {
+  vpt[4] = 200 - 1000 * zoom / 2;
+  vpt[5] = 200 - 1000 * zoom / 2;
+} else {
+  if (vpt[4] >= 0) {
+    vpt[4] = 0;
+  } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
+    vpt[4] = canvas.getWidth() - 1000 * zoom;
+  }
+  if (vpt[5] >= 0) {
+    vpt[5] = 0;
+  } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
+    vpt[5] = canvas.getHeight() - 1000 * zoom;
+  }
+})
 
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
