@@ -5,13 +5,11 @@ body {
     align-items: center;
     justify-content: center;
 }
-
 #container {
     display: flex;
     width: 90%;
     margin-top: 20px;
 }
-
 #sidebar {
     width: 200px;
     margin-right: 20px;
