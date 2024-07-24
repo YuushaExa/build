@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const canvas = new fabric.Canvas('canvas');
     let rulerVisible = false;
     let rulerInterval = 50;
-    let zoomLevel = 1; // Track the current zoom level
     canvas.setWidth(960);
     canvas.setHeight(540);
 
@@ -111,56 +110,6 @@ function sanitizeURL(url) {
 
 
 
-
-
-
-
-    document.getElementById('toggleRuler').addEventListener('click', function() {
-        rulerVisible = !rulerVisible;
-        updateRulerVisibility();
-    });
-
-    document.getElementById('rulerInterval').addEventListener('input', function() {
-        rulerInterval = parseInt(this.value);
-        if (rulerVisible) {
-            updateRulerVisibility();
-        }
-    });
-
-    document.getElementById('zoomIn').addEventListener('click', function() {
-        zoomLevel *= 1.1;
-        if (zoomLevel > 20) zoomLevel = 20;
-        canvas.setZoom(zoomLevel);
-        updateViewportTransform();
-        updateZoom();
-    });
-
-    document.getElementById('zoomOut').addEventListener('click', function() {
-        zoomLevel *= 0.9;
-        if (zoomLevel < 0.01) zoomLevel = 0.01;
-        canvas.setZoom(zoomLevel);
-        updateViewportTransform();
-        updateZoom();
-    });
-
-    document.getElementById('resetZoom').addEventListener('click', function() {
-        zoomLevel = 1;
-        canvas.setZoom(zoomLevel);
-        updateViewportTransform();
-        updateZoom();
-    });
-
-    document.getElementById('updateCanvasSize').addEventListener('click', function() {
-        const width = parseInt(document.getElementById('canvasWidth').value, 10);
-        const height = parseInt(document.getElementById('canvasHeight').value, 10);
-        canvas.setDimensions({ width: width, height: height });
-        updateRulerVisibility(); // Update ruler positions to match new canvas size
-    });
-
-    function updateZoom() {
-        document.getElementById('zoomPercentage').innerText = `${(zoomLevel * 100).toFixed(1)}%`;
-    }
-
     function updateRulerVisibility() {
         const horizontalRuler = document.getElementById('horizontalRuler');
         const verticalRuler = document.getElementById('verticalRuler');
@@ -222,12 +171,7 @@ function sanitizeURL(url) {
         }
     }
 
-    function updateViewportTransform() {
-        var vpt = canvas.viewportTransform;
-        vpt[4] = canvas.getWidth() / 2 - (canvas.getWidth() * zoomLevel / 2);
-        vpt[5] = canvas.getHeight() / 2 - (canvas.getHeight() * zoomLevel / 2);
-        canvas.renderAll();
-    }
+
 
     canvas.on('selection:updated', showObjectDetails);
     canvas.on('selection:created', showObjectDetails);
