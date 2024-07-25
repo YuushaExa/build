@@ -59,59 +59,75 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
     });
-document.getElementById('exportCode').addEventListener('click', function() {
-    const objects = canvas.getObjects();
-    const canvasWidth = canvas.getWidth();
-    const canvasHeight = canvas.getHeight();
-    const styles = generateStyles(objects, canvasWidth, canvasHeight);
-    const bodyContent = generateBodyContent(objects, canvasWidth, canvasHeight);
-    const html = generateHTML(styles, bodyContent);
-    document.getElementById('htmlCode').value = html;
-});
-function generateStyles(objects, canvasWidth, canvasHeight) {
-    let styles = 'body{margin:0;padding:0;font-family:Arial,sans-serif;}.canvas-container{position:relative;width:100vw;height:100vh;}.canvas-object{position:absolute;}@media(max-width:600px){.canvas-container{width:100%;height:auto;}.canvas-object{transform-origin:top left;}}';
-    objects.forEach((obj, index) => {
-        const uniqueId = `object-${index}`;
-        const leftPercent = (obj.left / canvasWidth) * 100;
-        const topPercent = (obj.top / canvasHeight) * 100;
-        const angle = obj.angle ? `transform:rotate(${obj.angle.toFixed(1)}deg);` : '';
-        if (obj.type === 'textbox') {
-            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;font-size:${(obj.fontSize / 16).toFixed(1)}rem;color:${obj.fill};font-family:${obj.fontFamily};${angle}}`;
-        } else if (obj.type === 'image') {
-            const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
-            const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
-            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;width:${widthPercent.toFixed(1)}%;height:${heightPercent.toFixed(1)}%;${angle}}`;
-        }
+    document.getElementById('exportCode').addEventListener('click', function() {
+        const html = generateHTMLContent();
+        document.getElementById('htmlCode').value = html;
     });
-    return styles;
-}
-function generateBodyContent(objects, canvasWidth, canvasHeight) {
-    let bodyContent = '<div class="canvas-container">';
-    objects.forEach((obj, index) => {
-        const uniqueId = `object-${index}`;
-        if (obj.type === 'textbox') {
-            const tag = obj.heading || 'div';
-            bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>`;
-        } else if (obj.type === 'image') {
-            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">`;
-        }
+    document.getElementById('preview').addEventListener('click', function() {
+        const html = generateHTMLContent();
+        const previewWindow = window.open('', 'Preview', 'width=800,height=600');
+        previewWindow.document.write(html);
+        previewWindow.document.close();
     });
-    bodyContent += '</div>';
-    return bodyContent;
-}
-function generateHTML(styles, bodyContent) {
-    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A dynamically generated HTML page with objects from the canvas."><meta name="keywords" content="HTML, canvas, objects, dynamic content"><title>Generated Page</title><style>${styles}</style></head><body>${bodyContent}</body></html>`;
-}
-function sanitizeHTML(html) {
-    const element = document.createElement('div');
-    element.innerText = html;
-    return element.innerHTML;
-}
-function sanitizeURL(url) {
-    const element = document.createElement('a');
-    element.href = url;
-    return element.href;
-}
+    
+    function generateHTMLContent() {
+        const objects = canvas.getObjects();
+        const canvasWidth = canvas.getWidth();
+        const canvasHeight = canvas.getHeight();
+        const styles = generateStyles(objects, canvasWidth, canvasHeight);
+        const bodyContent = generateBodyContent(objects, canvasWidth, canvasHeight);
+        return generateHTML(styles, bodyContent);
+    }
+
+    function generateStyles(objects, canvasWidth, canvasHeight) {
+        let styles = 'body{margin:0;padding:0;font-family:Arial,sans-serif;}.canvas-container{position:relative;width:100vw;height:100vh;}.canvas-object{position:absolute;}@media(max-width:600px){.canvas-container{width:100%;height:auto;}.canvas-object{transform-origin:top left;}}';
+        objects.forEach((obj, index) => {
+            const uniqueId = `object-${index}`;
+            const leftPercent = (obj.left / canvasWidth) * 100;
+            const topPercent = (obj.top / canvasHeight) * 100;
+            const angle = obj.angle ? `transform:rotate(${obj.angle.toFixed(1)}deg);` : '';
+            if (obj.type === 'textbox') {
+                styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;font-size:${(obj.fontSize / 16).toFixed(1)}rem;color:${obj.fill};font-family:${obj.fontFamily};${angle}}`;
+            } else if (obj.type === 'image') {
+                const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
+                const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
+                styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;width:${widthPercent.toFixed(1)}%;height:${heightPercent.toFixed(1)}%;${angle}}`;
+            }
+        });
+        return styles;
+    }
+
+    function generateBodyContent(objects, canvasWidth, canvasHeight) {
+        let bodyContent = '<div class="canvas-container">';
+        objects.forEach((obj, index) => {
+            const uniqueId = `object-${index}`;
+            if (obj.type === 'textbox') {
+                const tag = obj.heading || 'div';
+                bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>`;
+            } else if (obj.type === 'image') {
+                bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">`;
+            }
+        });
+        bodyContent += '</div>';
+        return bodyContent;
+    }
+
+    function generateHTML(styles, bodyContent) {
+        return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A dynamically generated HTML page with objects from the canvas."><meta name="keywords" content="HTML, canvas, objects, dynamic content"><title>Generated Page</title><style>${styles}</style></head><body>${bodyContent}</body></html>`;
+    }
+
+    function sanitizeHTML(html) {
+        const element = document.createElement('div');
+        element.innerText = html;
+        return element.innerHTML;
+    }
+
+    function sanitizeURL(url) {
+        const element = document.createElement('a');
+        element.href = url;
+        return element.href;
+    }
+    
     document.getElementById('toggleRuler').addEventListener('click', function() {
         rulerVisible = !rulerVisible;
         updateRulerVisibility();
@@ -130,7 +146,7 @@ function sanitizeURL(url) {
         updateZoom();
     });
     document.getElementById('zoomOut').addEventListener('click', function() {
-        zoomLevel *= 0.9;
+        zoomLevel /= 1.1;
         if (zoomLevel < 0.01) zoomLevel = 0.01;
         canvas.setZoom(zoomLevel);
         updateViewportTransform();
@@ -142,194 +158,88 @@ function sanitizeURL(url) {
         updateViewportTransform();
         updateZoom();
     });
-    document.getElementById('updateCanvasSize').addEventListener('click', function() {
-        const width = parseInt(document.getElementById('canvasWidth').value, 10);
-        const height = parseInt(document.getElementById('canvasHeight').value, 10);
-        canvas.setDimensions({ width: width, height: height });
-        updateRulerVisibility(); // Update ruler positions to match new canvas size
-    });
-    function updateZoom() {
-        document.getElementById('zoomPercentage').innerText = `${(zoomLevel * 100).toFixed(1)}%`;
+
+    function updateViewportTransform() {
+        var vpt = canvas.viewportTransform;
+        vpt[4] = canvas.getWidth() / 2 - (canvas.getWidth() * zoomLevel / 2);
+        vpt[5] = canvas.getHeight() / 2 - (canvas.getHeight() * zoomLevel / 2);
+        canvas.requestRenderAll();
     }
+
+    function updateZoom() {
+        document.getElementById('zoomPercentage').textContent = `${(zoomLevel * 100).toFixed(0)}%`;
+    }
+    
     function updateRulerVisibility() {
         const horizontalRuler = document.getElementById('horizontalRuler');
         const verticalRuler = document.getElementById('verticalRuler');
         if (rulerVisible) {
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            horizontalRuler.style.width = `${canvasWidth}px`;
-            verticalRuler.style.height = `${canvasHeight}px`;
-            horizontalRuler.innerHTML = '';
-            verticalRuler.innerHTML = '';
-            for (let i = 0; i < canvasWidth; i += 10) {
-                const mark = document.createElement('div');
-                mark.style.position = 'absolute';
-                mark.style.top = '0';
-                mark.style.left = `${i}px`;
-                mark.style.width = '1px';
-                mark.style.height = '10px';
-                mark.style.background = '#ccc';
-                horizontalRuler.appendChild(mark);
-                if (i % rulerInterval === 0) {
-                    const label = document.createElement('div');
-                    label.style.position = 'absolute';
-                    label.style.top = '10px';
-                    label.style.left = `${i}px`;
-                    label.style.fontSize = '10px';
-                    label.innerText = i;
-                    horizontalRuler.appendChild(label);
-                }
-            }
-            for (let j = 0; j < canvasHeight; j += 10) {
-                const mark = document.createElement('div');
-                mark.style.position = 'absolute';
-                mark.style.left = '0';
-                mark.style.top = `${j}px`;
-                mark.style.width = '10px';
-                mark.style.height = '1px';
-                mark.style.background = '#ccc';
-                verticalRuler.appendChild(mark);
-                if (j % rulerInterval === 0) {
-                    const label = document.createElement('div');
-                    label.style.position = 'absolute';
-                    label.style.top = `${j}px`;
-                    label.style.left = '10px';
-                    label.style.fontSize = '10px';
-                    label.innerText = j;
-                    verticalRuler.appendChild(label);
-                }
-            }
+            drawRuler(horizontalRuler, verticalRuler);
         } else {
             horizontalRuler.innerHTML = '';
             verticalRuler.innerHTML = '';
         }
     }
-    function updateViewportTransform() {
-        var vpt = canvas.viewportTransform;
-        vpt[4] = canvas.getWidth() / 2 - (canvas.getWidth() * zoomLevel / 2);
-        vpt[5] = canvas.getHeight() / 2 - (canvas.getHeight() * zoomLevel / 2);
-        canvas.renderAll();
+
+    function drawRuler(horizontalRuler, verticalRuler) {
+        horizontalRuler.innerHTML = '';
+        verticalRuler.innerHTML = '';
+        for (let i = 0; i < canvas.getWidth(); i += rulerInterval) {
+            const div = document.createElement('div');
+            div.classList.add('ruler-mark');
+            div.style.left = `${i}px`;
+            horizontalRuler.appendChild(div);
+        }
+        for (let i = 0; i < canvas.getHeight(); i += rulerInterval) {
+            const div = document.createElement('div');
+            div.classList.add('ruler-mark');
+            div.style.top = `${i}px`;
+            verticalRuler.appendChild(div);
+        }
     }
-    canvas.on('selection:updated', showObjectDetails);
-    canvas.on('selection:created', showObjectDetails);
-    canvas.on('selection:cleared', clearObjectDetails);
-    canvas.on('object:modified', showObjectDetails);
-    canvas.on('object:scaling', showObjectDetails);
-    canvas.on('object:rotating', showObjectDetails);
-    canvas.on('object:moving', showObjectDetails);
+    
     function showObjectDetails() {
         const activeObject = canvas.getActiveObject();
-        const details = document.getElementById('objectDetails');
-        details.innerHTML = '';
+        const objectDetails = document.getElementById('objectDetails');
         if (activeObject) {
+            let details = `<p>Type: ${activeObject.type}</p>`;
+            details += `<p>Left: ${activeObject.left}</p>`;
+            details += `<p>Top: ${activeObject.top}</p>`;
+            details += `<p>ScaleX: ${activeObject.scaleX}</p>`;
+            details += `<p>ScaleY: ${activeObject.scaleY}</p>`;
+            details += `<p>Angle: ${activeObject.angle}</p>`;
             if (activeObject.type === 'textbox') {
-                details.innerHTML = 
-                    `<h3>Text Properties</h3>
-                    <label>Text: <input type="text" id="textContent" value="${activeObject.text}"></label><br>
-                    <label>Size: <input type="number" id="textSize" value="${activeObject.fontSize.toFixed(1)}"></label><br>
-                    <label>Color: <input type="color" id="textColor" value="${activeObject.fill}"></label><br>
-                    <label>Font: <input type="text" id="textFont" value="${activeObject.fontFamily || 'Arial'}"></label><br>
-                    <label>Heading: 
-                        <select id="textHeading">
-                            <option value="div" ${activeObject.heading === 'div' ? 'selected' : ''}>Normal</option>
-                            <option value="h1" ${activeObject.heading === 'h1' ? 'selected' : ''}>H1</option>
-                            <option value="h2" ${activeObject.heading === 'h2' ? 'selected' : ''}>H2</option>
-                            <option value="h3" ${activeObject.heading === 'h3' ? 'selected' : ''}>H3</option>
-                            <option value="h4" ${activeObject.heading === 'h4' ? 'selected' : ''}>H4</option>
-                            <option value="h5" ${activeObject.heading === 'h5' ? 'selected' : ''}>H5</option>
-                            <option value="h6" ${activeObject.heading === 'h6' ? 'selected' : ''}>H6</option>
-                        </select>
-                    </label><br>
-                    <button id="resetText">Reset Text Properties</button>`;
-                document.getElementById('resetText').addEventListener('click', function() {
-                    activeObject.set({
-                        text: 'Sample Text',
-                        fontSize: 20,
-                        fill: '#000',
-                        fontFamily: 'Arial',
-                        heading: 'div'
-                    });
-                    canvas.renderAll();
-                    showObjectDetails();
-                });
-                // Add real-time updates for text properties
-                document.getElementById('textContent').addEventListener('input', function() {
-                    activeObject.set('text', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textSize').addEventListener('input', function() {
-                    activeObject.set('fontSize', parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('textColor').addEventListener('input', function() {
-                    activeObject.set('fill', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textFont').addEventListener('input', function() {
-                    activeObject.set('fontFamily', this.value);
-                    canvas.renderAll();
-                });
-                document.getElementById('textHeading').addEventListener('change', function() {
-                    activeObject.set('heading', this.value);
-                    canvas.renderAll();
-                });
+                details += `<p>Text: ${activeObject.text}</p>`;
+                details += `<p>Font Size: ${activeObject.fontSize}</p>`;
+                details += `<p>Fill: ${activeObject.fill}</p>`;
+                details += `<p>Font Family: ${activeObject.fontFamily}</p>`;
             } else if (activeObject.type === 'image') {
-                details.innerHTML = 
-                    `<h3>Image Properties</h3>
-                    <label>Width: <input type="number" id="imgWidth" value="${(activeObject.width * activeObject.scaleX).toFixed(1)}"></label><br>
-                    <label>Height: <input type="number" id="imgHeight" value="${(activeObject.height * activeObject.scaleY).toFixed(1)}"></label><br>
-                    <label>Angle: <input type="number" id="imgAngle" value="${activeObject.angle.toFixed(1)}"></label><br>
-                    <label>Alt Text: <input type="text" id="imgAlt" value="${activeObject.alt || ''}"></label><br>
-                    <button id="resetImage">Reset Image Properties</button>`;
-                document.getElementById('resetImage').addEventListener('click', function() {
-                    activeObject.set({
-                        scaleX: 0.5,
-                        scaleY: 0.5,
-                        angle: 0,
-                        alt: ''
-                    });
-                    canvas.renderAll();
-                    showObjectDetails();
-                });
-                // Add real-time updates for image properties
-                document.getElementById('imgWidth').addEventListener('input', function() {
-                    activeObject.scaleToWidth(parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgHeight').addEventListener('input', function() {
-                    activeObject.scaleToHeight(parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgAngle').addEventListener('input', function() {
-                    activeObject.set('angle', parseFloat(this.value));
-                    canvas.renderAll();
-                });
-                document.getElementById('imgAlt').addEventListener('input', function() {
-                    activeObject.set('alt', this.value);
-                });
+                details += `<p>Src: ${activeObject._element.src}</p>`;
+                details += `<p>Alt: ${activeObject.alt}</p>`;
             }
+            objectDetails.innerHTML = details;
+        } else {
+            objectDetails.innerHTML = '<p>No object selected</p>';
         }
     }
-    function clearObjectDetails() {
-        const details = document.getElementById('objectDetails');
-        details.innerHTML = '';
-    }
-    // Ensure real-time updates for object properties
-    canvas.on('object:scaling', function(e) {
-        const activeObject = e.target;
-        if (activeObject && activeObject.type === 'textbox') {
-            activeObject.set('fontSize', activeObject.fontSize * activeObject.scaleX);
-            activeObject.set({ scaleX: 1, scaleY: 1 });
-        }
-        showObjectDetails();
+    document.getElementById('canvasWidth').addEventListener('change', function() {
+        canvas.setWidth(parseInt(this.value));
+        if (rulerVisible) updateRulerVisibility();
     });
-    canvas.on('object:modified', function(e) {
-        showObjectDetails();
+    document.getElementById('canvasHeight').addEventListener('change', function() {
+        canvas.setHeight(parseInt(this.value));
+        if (rulerVisible) updateRulerVisibility();
     });
-    canvas.on('object:rotating', function(e) {
-        showObjectDetails();
+    document.getElementById('updateCanvasSize').addEventListener('click', function() {
+        const canvasWidth = parseInt(document.getElementById('canvasWidth').value);
+        const canvasHeight = parseInt(document.getElementById('canvasHeight').value);
+        canvas.setWidth(canvasWidth);
+        canvas.setHeight(canvasHeight);
+        if (rulerVisible) updateRulerVisibility();
     });
-    canvas.on('object:moving', function(e) {
-        showObjectDetails();
-    });
+
+    canvas.on('selection:created', showObjectDetails);
+    canvas.on('selection:updated', showObjectDetails);
+    canvas.on('selection:cleared', showObjectDetails);
+    canvas.on('object:modified', showObjectDetails);
 });
