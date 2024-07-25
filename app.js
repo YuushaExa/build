@@ -59,11 +59,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-     document.getElementById('exportCode').addEventListener('click', function() {
-        const html = generateHTMLContent();
-        document.getElementById('htmlCode').value = html;
-    });
-    
 document.getElementById('preview').addEventListener('click', function() {
     const html = generateHTMLContent();
 
@@ -80,7 +75,16 @@ document.getElementById('preview').addEventListener('click', function() {
     overlay.style.justifyContent = 'center';
     overlay.style.alignItems = 'center';
     overlay.style.zIndex = '9999';
-    overlay.innerHTML = html;
+
+    // Create the iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '80%';
+    iframe.style.height = '80%';
+    iframe.style.border = 'none';
+    iframe.srcdoc = html; // Use srcdoc to set the content of the iframe
+
+    // Append the iframe to the overlay
+    overlay.appendChild(iframe);
 
     // Append the overlay to the body
     document.body.appendChild(overlay);
@@ -93,65 +97,64 @@ document.getElementById('preview').addEventListener('click', function() {
     });
 });
 
+function generateHTMLContent() {
+    const objects = canvas.getObjects();
+    const canvasWidth = canvas.getWidth();
+    const canvasHeight = canvas.getHeight();
+    const styles = generateStyles(objects, canvasWidth, canvasHeight);
+    const bodyContent = generateBodyContent(objects, canvasWidth, canvasHeight);
+    return generateHTML(styles, bodyContent);
+}
 
-    
-    function generateHTMLContent() {
-        const objects = canvas.getObjects();
-        const canvasWidth = canvas.getWidth();
-        const canvasHeight = canvas.getHeight();
-        const styles = generateStyles(objects, canvasWidth, canvasHeight);
-        const bodyContent = generateBodyContent(objects, canvasWidth, canvasHeight);
-        return generateHTML(styles, bodyContent);
-    }
+function generateStyles(objects, canvasWidth, canvasHeight) {
+    let styles = 'body{margin:0;padding:0;font-family:Arial,sans-serif;}.canvas-container{position:relative;width:100vw;height:100vh;}.canvas-object{position:absolute;}@media(max-width:600px){.canvas-container{width:100%;height:auto;}.canvas-object{transform-origin:top left;}}';
+    objects.forEach((obj, index) => {
+        const uniqueId = `object-${index}`;
+        const leftPercent = (obj.left / canvasWidth) * 100;
+        const topPercent = (obj.top / canvasHeight) * 100;
+        const angle = obj.angle ? `transform:rotate(${obj.angle.toFixed(1)}deg);` : '';
+        if (obj.type === 'textbox') {
+            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;font-size:${(obj.fontSize / 16).toFixed(1)}rem;color:${obj.fill};font-family:${obj.fontFamily};${angle}}`;
+        } else if (obj.type === 'image') {
+            const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
+            const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
+            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;width:${widthPercent.toFixed(1)}%;height:${heightPercent.toFixed(1)}%;${angle}}`;
+        }
+    });
+    return styles;
+}
 
-    function generateStyles(objects, canvasWidth, canvasHeight) {
-        let styles = 'body{margin:0;padding:0;font-family:Arial,sans-serif;}.canvas-container{position:relative;width:100vw;height:100vh;}.canvas-object{position:absolute;}@media(max-width:600px){.canvas-container{width:100%;height:auto;}.canvas-object{transform-origin:top left;}}';
-        objects.forEach((obj, index) => {
-            const uniqueId = `object-${index}`;
-            const leftPercent = (obj.left / canvasWidth) * 100;
-            const topPercent = (obj.top / canvasHeight) * 100;
-            const angle = obj.angle ? `transform:rotate(${obj.angle.toFixed(1)}deg);` : '';
-            if (obj.type === 'textbox') {
-                styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;font-size:${(obj.fontSize / 16).toFixed(1)}rem;color:${obj.fill};font-family:${obj.fontFamily};${angle}}`;
-            } else if (obj.type === 'image') {
-                const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
-                const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
-                styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;width:${widthPercent.toFixed(1)}%;height:${heightPercent.toFixed(1)}%;${angle}}`;
-            }
-        });
-        return styles;
-    }
+function generateBodyContent(objects, canvasWidth, canvasHeight) {
+    let bodyContent = '<div class="canvas-container">';
+    objects.forEach((obj, index) => {
+        const uniqueId = `object-${index}`;
+        if (obj.type === 'textbox') {
+            const tag = obj.heading || 'div';
+            bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>`;
+        } else if (obj.type === 'image') {
+            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">`;
+        }
+    });
+    bodyContent += '</div>';
+    return bodyContent;
+}
 
-    function generateBodyContent(objects, canvasWidth, canvasHeight) {
-        let bodyContent = '<div class="canvas-container">';
-        objects.forEach((obj, index) => {
-            const uniqueId = `object-${index}`;
-            if (obj.type === 'textbox') {
-                const tag = obj.heading || 'div';
-                bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>`;
-            } else if (obj.type === 'image') {
-                bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">`;
-            }
-        });
-        bodyContent += '</div>';
-        return bodyContent;
-    }
+function generateHTML(styles, bodyContent) {
+    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A dynamically generated HTML page with objects from the canvas."><meta name="keywords" content="HTML, canvas, objects, dynamic content"><title>Generated Page</title><style>${styles}</style></head><body>${bodyContent}</body></html>`;
+}
 
-    function generateHTML(styles, bodyContent) {
-        return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A dynamically generated HTML page with objects from the canvas."><meta name="keywords" content="HTML, canvas, objects, dynamic content"><title>Generated Page</title><style>${styles}</style></head><body>${bodyContent}</body></html>`;
-    }
+function sanitizeHTML(html) {
+    const element = document.createElement('div');
+    element.innerText = html;
+    return element.innerHTML;
+}
 
-    function sanitizeHTML(html) {
-        const element = document.createElement('div');
-        element.innerText = html;
-        return element.innerHTML;
-    }
+function sanitizeURL(url) {
+    const element = document.createElement('a');
+    element.href = url;
+    return element.href;
+}
 
-    function sanitizeURL(url) {
-        const element = document.createElement('a');
-        element.href = url;
-        return element.href;
-    }
     
     document.getElementById('toggleRuler').addEventListener('click', function() {
         rulerVisible = !rulerVisible;
