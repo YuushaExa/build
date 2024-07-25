@@ -76,6 +76,9 @@ document.getElementById('preview').addEventListener('click', function() {
     overlay.style.width = '100%';
     overlay.style.height = '100%';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
     overlay.style.zIndex = '9999';
     overlay.innerHTML = html;
 
@@ -89,6 +92,7 @@ document.getElementById('preview').addEventListener('click', function() {
         }
     });
 });
+
 
     
     function generateHTMLContent() {
