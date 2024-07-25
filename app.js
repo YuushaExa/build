@@ -65,11 +65,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 document.getElementById('preview').addEventListener('click', function() {
     const html = generateHTMLContent();
-    const previewWindow = window.open('', 'Preview', 'width=100%,height=100%');
+    const previewWindow = window.open('', 'Preview', 'width=1920px,height=1080px');
     previewWindow.document.write(html);
     previewWindow.document.close();
 });
-
     
     function generateHTMLContent() {
         const objects = canvas.getObjects();
