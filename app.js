@@ -63,12 +63,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const html = generateHTMLContent();
         document.getElementById('htmlCode').value = html;
     });
-    document.getElementById('preview').addEventListener('click', function() {
-        const html = generateHTMLContent();
-        const previewWindow = window.open('', 'Preview', 'width=800,height=600');
-        previewWindow.document.write(html);
-        previewWindow.document.close();
-    });
+document.getElementById('preview').addEventListener('click', function() {
+    const html = generateHTMLContent();
+    const previewWindow = window.open('', 'Preview', 'width=100%,height=100%');
+    previewWindow.document.write(html);
+    previewWindow.document.close();
+});
+
     
     function generateHTMLContent() {
         const objects = canvas.getObjects();
