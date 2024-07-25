@@ -63,12 +63,33 @@ document.addEventListener("DOMContentLoaded", function() {
         const html = generateHTMLContent();
         document.getElementById('htmlCode').value = html;
     });
+    
 document.getElementById('preview').addEventListener('click', function() {
     const html = generateHTMLContent();
-    const previewWindow = window.open('', 'Preview', 'width=1920px,height=1080px');
-    previewWindow.document.write(html);
-    previewWindow.document.close();
+
+    // Create a modal overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'previewOverlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.zIndex = '9999';
+    overlay.innerHTML = html;
+
+    // Append the overlay to the body
+    document.body.appendChild(overlay);
+
+    // Close the overlay when clicked outside the content
+    overlay.addEventListener('click', function(event) {
+        if (event.target === overlay) {
+            overlay.remove();
+        }
+    });
 });
+
     
     function generateHTMLContent() {
         const objects = canvas.getObjects();
