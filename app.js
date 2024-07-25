@@ -80,18 +80,30 @@ document.getElementById('preview').addEventListener('click', function() {
     overlay.style.justifyContent = 'center';
     overlay.style.alignItems = 'center';
     overlay.style.zIndex = '9999';
-    overlay.innerHTML = html;
+
+    // Create a new canvas element to render the HTML content
+    const canvas = document.createElement('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    overlay.appendChild(canvas);
 
     // Append the overlay to the body
     document.body.appendChild(overlay);
 
-    // Close the overlay when clicked outside the content
-    overlay.addEventListener('click', function(event) {
-        if (event.target === overlay) {
-            overlay.remove();
-        }
+    // Use html2canvas to convert the HTML content into an image and draw it on the canvas
+    html2canvas(overlay).then(canvasImage => {
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(canvasImage, 0, 0);
+
+        // Close the overlay when clicked outside the content
+        overlay.addEventListener('click', function(event) {
+            if (event.target === overlay) {
+                overlay.remove();
+            }
+        });
     });
 });
+
 
 
     
