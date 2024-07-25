@@ -67,32 +67,32 @@ document.addEventListener("DOMContentLoaded", function() {
 document.getElementById('preview').addEventListener('click', function() {
     const html = generateHTMLContent();
 
-    // Create a modal overlay
-    const overlay = document.createElement('div');
-    overlay.id = 'previewOverlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '9999';
-    overlay.innerHTML = html;
+    // Create a canvas element for the overlay
+    const canvas = document.createElement('canvas');
+    canvas.id = 'previewCanvas';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Append the overlay to the body
-    document.body.appendChild(overlay);
+    // Append the canvas to the body
+    document.body.appendChild(canvas);
 
     // Close the overlay when clicked outside the content
-    overlay.addEventListener('click', function(event) {
-        if (event.target === overlay) {
-            overlay.remove();
+    canvas.addEventListener('click', function(event) {
+        if (event.target === canvas) {
+            canvas.remove();
         }
     });
-});
 
+    // Draw HTML content on the canvas
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(html)));
+});
 
 
 
