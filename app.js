@@ -78,9 +78,10 @@ document.getElementById('preview').addEventListener('click', function() {
 
     // Create the iframe
     const iframe = document.createElement('iframe');
-    iframe.style.width = '80%';
-    iframe.style.height = '80%';
+    iframe.style.width = '90%';
+    iframe.style.height = '90%';
     iframe.style.border = 'none';
+    iframe.style.background = 'white';
     iframe.srcdoc = html; // Use srcdoc to set the content of the iframe
 
     // Append the iframe to the overlay
