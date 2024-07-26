@@ -82,13 +82,16 @@ document.getElementById('preview').addEventListener('click', function() {
     iframe.style.height = '90%';
     iframe.style.border = 'none';
     iframe.style.background = 'white';
-    iframe.srcdoc = html; // Use srcdoc to set the content of the iframe
+    iframe.src = 'about:blank'; // Set a safe initial src value
 
     // Append the iframe to the overlay
     overlay.appendChild(iframe);
 
     // Append the overlay to the body
     document.body.appendChild(overlay);
+
+    // Set the iframe content after appending it to the DOM
+    iframe.contentDocument.write(html);
 
     // Close the overlay when clicked outside the content
     overlay.addEventListener('click', function(event) {
@@ -97,6 +100,9 @@ document.getElementById('preview').addEventListener('click', function() {
         }
     });
 });
+
+// Other functions remain the same
+
 
 function generateHTMLContent() {
     const objects = canvas.getObjects();
