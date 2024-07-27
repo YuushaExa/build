@@ -64,13 +64,19 @@ document.addEventListener("DOMContentLoaded", function() {
 document.getElementById('rotateButton').addEventListener('click', function() {
     var selectedObject = canvas.getActiveObject();
     if (selectedObject) {
-        var element = selectedObject._element; // Access the HTML element directly
+        // Create a new HTML element if it doesn't exist
+        if (!selectedObject._element) {
+            selectedObject.setElement(document.createElement('div'));
+        }
+        
+        var element = selectedObject._element;
         element.style.transform = "rotateX(45deg)";
         canvas.renderAll(); // Render the canvas to see the changes
     } else {
         alert("Please select an object to rotate.");
     }
 });
+
 
     // preview  
 document.getElementById('preview').addEventListener('click', function() {
