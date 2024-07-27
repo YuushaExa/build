@@ -61,21 +61,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // rotate
 
-document.getElementById('rotateButton').addEventListener('click', function() {
-    var selectedObject = canvas.getActiveObject();
-    if (selectedObject) {
-        var element = selectedObject._element;
-        if (!element) {
-            element = selectedObject.setElement(document.createElement('div'));
-        }
-        element.style.transform = "rotateX(45deg)";
-        canvas.requestRenderAll(); // Render the canvas to see the changes
-    } else {
-        alert("Please select an object to rotate.");
-    }
-});
+    const button = document.getElementById('rotateButton');
 
-
+    button.addEventListener('click', () => {
+        button.style.transform = 'rotateX(45deg)';
+    });
 
     // preview  
 document.getElementById('preview').addEventListener('click', function() {
