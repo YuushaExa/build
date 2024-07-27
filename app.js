@@ -61,14 +61,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // rotate
 
-    document.getElementById('rotateButton').addEventListener('click', function() {
+document.getElementById('rotateButton').addEventListener('click', function() {
     var selectedObject = canvas.getActiveObject();
     if (selectedObject) {
-        var deg = prompt("Enter the degree for rotation (e.g., 45):");
-        if (deg) {
-            selectedObject.set('angle', parseInt(deg));
-            canvas.renderAll();
-        }
+        var element = selectedObject.getElement();
+        element.style.transform = "rotateX(45deg)";
     } else {
         alert("Please select an object to rotate.");
     }
