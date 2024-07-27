@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let zoomLevel = 1; // Track the current zoom level
     canvas.setWidth(960);
     canvas.setHeight(540);
+
     // Mouse wheel zoom
     canvas.on('mouse:wheel', function(opt) {
         var delta = opt.e.deltaY;
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomLevel = zoom;
         updateZoom();
     });
+
     document.getElementById('addText').addEventListener('click', function() {
         const text = new fabric.Textbox('Sample Text', {
             left: 50,
@@ -40,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
         canvas.setActiveObject(text);
         showObjectDetails();
     });
+
     document.getElementById('addImage').addEventListener('click', function() {
         const url = prompt("Enter the image URL:");
         const altText = prompt("Enter the alt text for the image:");
@@ -59,155 +62,156 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // preview  
-document.getElementById('preview').addEventListener('click', function() {
-    const html = generateHTMLContent();
+    document.getElementById('preview').addEventListener('click', function() {
+        const html = generateHTMLContent();
+        console.log('Generated HTML for preview:', html); // Debugging log
 
-    // PC prev
-    const overlay = document.createElement('div');
-    overlay.id = 'previewOverlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '9999';
+        // PC preview
+        const overlay = document.createElement('div');
+        overlay.id = 'previewOverlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = '9999';
 
-const iframe = document.createElement('iframe');
-iframe.style.maxWidth = '1920px';
-iframe.style.maxHeight = '1080px';
-iframe.style.border = 'none';
-iframe.style.background = 'white';
-iframe.style.width = '90%';
-iframe.style.height = '90%';
-iframe.src = 'about:blank';
+        const iframe = document.createElement('iframe');
+        iframe.style.maxWidth = '1920px';
+        iframe.style.maxHeight = '1080px';
+        iframe.style.border = 'none';
+        iframe.style.background = 'white';
+        iframe.style.width = '90%';
+        iframe.style.height = '90%';
+        iframe.src = 'about:blank';
 
-    // Append the iframe to the overlay
-    overlay.appendChild(iframe);
+        // Append the iframe to the overlay
+        overlay.appendChild(iframe);
 
-    // Append the overlay to the body
-    document.body.appendChild(overlay);
+        // Append the overlay to the body
+        document.body.appendChild(overlay);
 
-    // Set the iframe content after appending it to the DOM
-    iframe.contentDocument.write(html);
+        // Set the iframe content after appending it to the DOM
+        iframe.contentDocument.open();
+        iframe.contentDocument.write(html);
+        iframe.contentDocument.close();
 
-    // Close the overlay when clicked outside the content
-    overlay.addEventListener('click', function(event) {
-        if (event.target === overlay) {
-            overlay.remove();
-        }
+        // Close the overlay when clicked outside the content
+        overlay.addEventListener('click', function(event) {
+            if (event.target === overlay) {
+                overlay.remove();
+            }
+        });
     });
-});
-
-// Mobile prev
 
     document.getElementById('mobilePreview').addEventListener('click', function() {
-    const html = generateHTMLContent();
+        const html = generateHTMLContent();
+        console.log('Generated HTML for mobile preview:', html); // Debugging log
 
-    // Create a modal overlay for mobile preview
-    const overlay = document.createElement('div');
-    overlay.id = 'mobilePreviewOverlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%'; // Set width for 1080x2400 screen
-    overlay.style.height = '100%'; // Set height for 1080x2400 screen
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '9999';
+        // Create a modal overlay for mobile preview
+        const overlay = document.createElement('div');
+        overlay.id = 'mobilePreviewOverlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%'; // Set width for 1080x2400 screen
+        overlay.style.height = '100%'; // Set height for 1080x2400 screen
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = '9999';
 
-    // Create the iframe for mobile preview
-const iframe = document.createElement('iframe');
-iframe.style.maxWidth = '1080px';
-iframe.style.maxHeight = '2400px';
-iframe.style.border = 'none';
-iframe.style.background = 'white';
-iframe.style.width = '90%';
-iframe.style.height = '90%';
-iframe.src = 'about:blank';
+        // Create the iframe for mobile preview
+        const iframe = document.createElement('iframe');
+        iframe.style.maxWidth = '1080px';
+        iframe.style.maxHeight = '2400px';
+        iframe.style.border = 'none';
+        iframe.style.background = 'white';
+        iframe.style.width = '90%';
+        iframe.style.height = '90%';
+        iframe.src = 'about:blank';
 
-    // Append the iframe to the overlay
-    overlay.appendChild(iframe);
+        // Append the iframe to the overlay
+        overlay.appendChild(iframe);
 
-    // Append the overlay to the body
-    document.body.appendChild(overlay);
+        // Append the overlay to the body
+        document.body.appendChild(overlay);
 
-    // Set the iframe content after appending it to the DOM
-    iframe.contentDocument.write(html);
+        // Set the iframe content after appending it to the DOM
+        iframe.contentDocument.open();
+        iframe.contentDocument.write(html);
+        iframe.contentDocument.close();
 
-    // Close the overlay when clicked outside the content
-    overlay.addEventListener('click', function(event) {
-        if (event.target === overlay) {
-            overlay.remove();
-        }
+        // Close the overlay when clicked outside the content
+        overlay.addEventListener('click', function(event) {
+            if (event.target === overlay) {
+                overlay.remove();
+            }
+        });
     });
-});
 
-    //
+    function generateHTMLContent() {
+        const objects = canvas.getObjects();
+        const canvasWidth = canvas.getWidth();
+        const canvasHeight = canvas.getHeight();
+        const styles = generateStyles(objects, canvasWidth, canvasHeight);
+        const bodyContent = generateBodyContent(objects, canvasWidth, canvasHeight);
+        return generateHTML(styles, bodyContent);
+    }
 
-function generateHTMLContent() {
-    const objects = canvas.getObjects();
-    const canvasWidth = canvas.getWidth();
-    const canvasHeight = canvas.getHeight();
-    const styles = generateStyles(objects, canvasWidth, canvasHeight);
-    const bodyContent = generateBodyContent(objects, canvasWidth, canvasHeight);
-    return generateHTML(styles, bodyContent);
-}
+    function generateStyles(objects, canvasWidth, canvasHeight) {
+        let styles = 'body{margin:0;padding:0;font-family:Arial,sans-serif;}.canvas-container{position:relative;width:100vw;height:100vh;}.canvas-object{position:absolute;}@media(max-width:600px){.canvas-container{width:100%;height:auto;}.canvas-object{transform-origin:top left;}}';
+        objects.forEach((obj, index) => {
+            const uniqueId = `object-${index}`;
+            const leftPercent = (obj.left / canvasWidth) * 100;
+            const topPercent = (obj.top / canvasHeight) * 100;
+            const angle = obj.angle ? `transform:rotate(${obj.angle.toFixed(1)}deg);` : '';
+            if (obj.type === 'textbox') {
+                styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;font-size:${(obj.fontSize / 16).toFixed(1)}rem;color:${obj.fill};font-family:${obj.fontFamily};${angle}}`;
+            } else if (obj.type === 'image') {
+                const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
+                const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
+                styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;width:${widthPercent.toFixed(1)}%;height:${heightPercent.toFixed(1)}%;${angle}}`;
+            }
+        });
+        return styles;
+    }
 
-function generateStyles(objects, canvasWidth, canvasHeight) {
-    let styles = 'body{margin:0;padding:0;font-family:Arial,sans-serif;}.canvas-container{position:relative;width:100vw;height:100vh;}.canvas-object{position:absolute;}@media(max-width:600px){.canvas-container{width:100%;height:auto;}.canvas-object{transform-origin:top left;}}';
-    objects.forEach((obj, index) => {
-        const uniqueId = `object-${index}`;
-        const leftPercent = (obj.left / canvasWidth) * 100;
-        const topPercent = (obj.top / canvasHeight) * 100;
-        const angle = obj.angle ? `transform:rotate(${obj.angle.toFixed(1)}deg);` : '';
-        if (obj.type === 'textbox') {
-            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;font-size:${(obj.fontSize / 16).toFixed(1)}rem;color:${obj.fill};font-family:${obj.fontFamily};${angle}}`;
-        } else if (obj.type === 'image') {
-            const widthPercent = ((obj.width * obj.scaleX) / canvasWidth) * 100;
-            const heightPercent = ((obj.height * obj.scaleY) / canvasHeight) * 100;
-            styles += `#${uniqueId}{left:${leftPercent.toFixed(1)}%;top:${topPercent.toFixed(1)}%;width:${widthPercent.toFixed(1)}%;height:${heightPercent.toFixed(1)}%;${angle}}`;
-        }
-    });
-    return styles;
-}
+    function generateBodyContent(objects, canvasWidth, canvasHeight) {
+        let bodyContent = '<div class="canvas-container">';
+        objects.forEach((obj, index) => {
+            const uniqueId = `object-${index}`;
+            if (obj.type === 'textbox') {
+                const tag = obj.heading || 'div';
+                bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>`;
+            } else if (obj.type === 'image') {
+                bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">`;
+            }
+        });
+        bodyContent += '</div>';
+        return bodyContent;
+    }
 
-function generateBodyContent(objects, canvasWidth, canvasHeight) {
-    let bodyContent = '<div class="canvas-container">';
-    objects.forEach((obj, index) => {
-        const uniqueId = `object-${index}`;
-        if (obj.type === 'textbox') {
-            const tag = obj.heading || 'div';
-            bodyContent += `<${tag} id="${uniqueId}" class="canvas-object" role="textbox">${sanitizeHTML(obj.text)}</${tag}>`;
-        } else if (obj.type === 'image') {
-            bodyContent += `<img id="${uniqueId}" class="canvas-object" src="${sanitizeURL(obj._element.src)}" alt="${sanitizeHTML(obj.alt || 'Image')}" role="img">`;
-        }
-    });
-    bodyContent += '</div>';
-    return bodyContent;
-}
+    function generateHTML(styles, bodyContent) {
+        return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A dynamically generated HTML page with objects from the canvas."><meta name="keywords" content="HTML, canvas, objects, dynamic content"><title>Generated Page</title><style>${styles}</style></head><body>${bodyContent}</body></html>`;
+    }
 
-function generateHTML(styles, bodyContent) {
-    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="A dynamically generated HTML page with objects from the canvas."><meta name="keywords" content="HTML, canvas, objects, dynamic content"><title>Generated Page</title><style>${styles}</style></head><body>${bodyContent}</body></html>`;
-}
+    function sanitizeHTML(input) {
+        const tempElement = document.createElement('div');
+        tempElement.textContent = input;
+        return tempElement.innerHTML;
+    }
 
-function sanitizeHTML(html) {
-    const element = document.createElement('div');
-    element.innerText = html;
-    return element.innerHTML;
-}
-
-function sanitizeURL(url) {
-    const element = document.createElement('a');
-    element.href = url;
-    return element.href;
-}
+    function sanitizeURL(input) {
+        const anchorElement = document.createElement('a');
+        anchorElement.href = input;
+        return anchorElement.href;
+    }
 
     
     document.getElementById('toggleRuler').addEventListener('click', function() {
