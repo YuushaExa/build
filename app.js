@@ -62,6 +62,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    //
+
+      document.getElementById('exportCode').addEventListener('click', function() {
+        const html = generateHTMLContent();
+        document.getElementById('htmlCode').value = html;
+    });
+
+    //
+    
     document.getElementById('preview').addEventListener('click', function() {
         const html = generateHTMLContent();
         console.log('Generated HTML for preview:', html); // Debugging log
