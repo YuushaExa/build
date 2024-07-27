@@ -64,8 +64,9 @@ document.addEventListener("DOMContentLoaded", function() {
 document.getElementById('rotateButton').addEventListener('click', function() {
     var selectedObject = canvas.getActiveObject();
     if (selectedObject) {
-        var element = selectedObject.getElement();
+        var element = selectedObject._element; // Access the HTML element directly
         element.style.transform = "rotateX(45deg)";
+        canvas.renderAll(); // Render the canvas to see the changes
     } else {
         alert("Please select an object to rotate.");
     }
