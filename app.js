@@ -59,6 +59,22 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+// rotate
+
+    document.getElementById('rotateButton').addEventListener('click', function() {
+    var selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        var deg = prompt("Enter the degree for rotation (e.g., 45):");
+        if (deg) {
+            selectedObject.set('angle', parseInt(deg));
+            canvas.renderAll();
+        }
+    } else {
+        alert("Please select an object to rotate.");
+    }
+});
+
+    // preview  
 document.getElementById('preview').addEventListener('click', function() {
     const html = generateHTMLContent();
 
