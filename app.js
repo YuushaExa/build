@@ -68,8 +68,8 @@ document.getElementById('preview').addEventListener('click', function() {
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
     overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
+    overlay.style.width = '1920px';
+    overlay.style.height = '1080px';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     overlay.style.display = 'flex';
     overlay.style.justifyContent = 'center';
