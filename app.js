@@ -68,21 +68,22 @@ document.getElementById('preview').addEventListener('click', function() {
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
     overlay.style.left = '0';
-    overlay.style.width = '1920px';
-    overlay.style.height = '1080px';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     overlay.style.display = 'flex';
     overlay.style.justifyContent = 'center';
     overlay.style.alignItems = 'center';
     overlay.style.zIndex = '9999';
 
-    // Create the iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '90%';
-    iframe.style.height = '90%';
-    iframe.style.border = 'none';
-    iframe.style.background = 'white';
-    iframe.src = 'about:blank'; // Set a safe initial src value
+const iframe = document.createElement('iframe');
+iframe.style.maxWidth = '1920px';
+iframe.style.maxHeight = '1080px';
+iframe.style.border = 'none';
+iframe.style.background = 'white';
+iframe.style.width = '90%';
+iframe.style.height = '90%';
+iframe.src = 'about:blank';
 
     // Append the iframe to the overlay
     overlay.appendChild(iframe);
@@ -112,8 +113,8 @@ document.getElementById('preview').addEventListener('click', function() {
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
     overlay.style.left = '0';
-    overlay.style.width = '1080px'; // Set width for 1080x2400 screen
-    overlay.style.height = '2400px'; // Set height for 1080x2400 screen
+    overlay.style.width = '100%'; // Set width for 1080x2400 screen
+    overlay.style.height = '100%'; // Set height for 1080x2400 screen
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     overlay.style.display = 'flex';
     overlay.style.justifyContent = 'center';
@@ -121,12 +122,14 @@ document.getElementById('preview').addEventListener('click', function() {
     overlay.style.zIndex = '9999';
 
     // Create the iframe for mobile preview
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '90%'; // Adjust width as needed
-    iframe.style.height = '90%'; // Adjust height as needed
-    iframe.style.border = 'none';
-    iframe.style.background = 'white';
-    iframe.src = 'about:blank'; // Set a safe initial src value
+const iframe = document.createElement('iframe');
+iframe.style.maxWidth = '1080px';
+iframe.style.maxHeight = '2400px';
+iframe.style.border = 'none';
+iframe.style.background = 'white';
+iframe.style.width = '90%';
+iframe.style.height = '90%';
+iframe.src = 'about:blank';
 
     // Append the iframe to the overlay
     overlay.appendChild(iframe);
