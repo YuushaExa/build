@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
 document.getElementById('preview').addEventListener('click', function() {
     const html = generateHTMLContent();
 
-    // Create a modal overlay
+    // PC prev
     const overlay = document.createElement('div');
     overlay.id = 'previewOverlay';
     overlay.style.position = 'fixed';
@@ -101,8 +101,51 @@ document.getElementById('preview').addEventListener('click', function() {
     });
 });
 
-// Other functions remain the same
+// Mobile prev
 
+    document.getElementById('mobilePreview').addEventListener('click', function() {
+    const html = generateHTMLContent();
+
+    // Create a modal overlay for mobile preview
+    const overlay = document.createElement('div');
+    overlay.id = 'mobilePreviewOverlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '1080px'; // Set width for 1080x2400 screen
+    overlay.style.height = '2400px'; // Set height for 1080x2400 screen
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '9999';
+
+    // Create the iframe for mobile preview
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '90%'; // Adjust width as needed
+    iframe.style.height = '90%'; // Adjust height as needed
+    iframe.style.border = 'none';
+    iframe.style.background = 'white';
+    iframe.src = 'about:blank'; // Set a safe initial src value
+
+    // Append the iframe to the overlay
+    overlay.appendChild(iframe);
+
+    // Append the overlay to the body
+    document.body.appendChild(overlay);
+
+    // Set the iframe content after appending it to the DOM
+    iframe.contentDocument.write(html);
+
+    // Close the overlay when clicked outside the content
+    overlay.addEventListener('click', function(event) {
+        if (event.target === overlay) {
+            overlay.remove();
+        }
+    });
+});
+
+    //
 
 function generateHTMLContent() {
     const objects = canvas.getObjects();
