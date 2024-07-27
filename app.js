@@ -59,14 +59,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-// rotate
-
-    const button = document.getElementById('rotateButton');
-
-    button.addEventListener('click', () => {
-        button.style.transform = 'rotateX(45deg)';
-    });
-
     // preview  
 document.getElementById('preview').addEventListener('click', function() {
     const html = generateHTMLContent();
